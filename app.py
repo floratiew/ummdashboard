@@ -116,7 +116,8 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     type_options = sorted(df["message_type_label"].unique())
     selected_types = st.sidebar.multiselect("Message types", type_options, default=type_options)
     all_areas = sorted({area for areas in df["area_names"] for area in areas})
-    selected_areas = st.sidebar.multiselect("Market areas", all_areas)
+    st.sidebar.subheader("Area Filtering")
+    selected_areas = st.sidebar.multiselect("Filter by areas (leave empty for all)", all_areas)
     publishers = sorted(df["publisher_name"].unique())
     selected_publishers = st.sidebar.multiselect("Publishers", publishers)
     search_term = st.sidebar.text_input("Search remarks", "")
@@ -131,6 +132,7 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         filtered = filtered[filtered["message_type_label"].isin(selected_types)]
     if selected_publishers:
         filtered = filtered[filtered["publisher_name"].isin(selected_publishers)]
+    # Area inclusion logic - only filter if areas are selected
     if selected_areas:
         filtered = filtered[
             filtered["area_names"].apply(lambda names: any(area in names for area in selected_areas))
@@ -263,8 +265,11 @@ def render_outage_events_interactive():
     df = pd.read_csv(events_path)
     status = st.sidebar.selectbox("Outage status (event)", ["Planned", "Unplanned", "Both"], key="event_status_select")
     area_options = sorted(df["area"].unique())
-    selected_areas = st.sidebar.multiselect("Areas (event)", area_options, default=area_options, key="event_area_multiselect")
-    filtered = df[df["area"].isin(selected_areas)]
+    selected_areas_event = st.sidebar.multiselect("Filter by areas (event, leave empty for all)", area_options, key="event_area_multiselect")
+    if selected_areas_event:
+        filtered = df[df["area"].isin(selected_areas_event)]
+    else:
+        filtered = df
     filtered = filtered[filtered["mw"] >= mw_threshold]
     if status != "Both":
         filtered = filtered[filtered["status"] == status]
@@ -284,9 +289,14 @@ def render_area_full_outage_summary():
     year_options = sorted(df["year"].dropna().unique())
     selected_years = st.sidebar.multiselect("Year (full summary)", year_options, default=year_options, key="full_status_year_multiselect")
     df = df[df["year"].isin(selected_years)]
+    
+    # Area inclusion logic
     area_options = sorted(df["area"].unique())
-    selected_areas = st.sidebar.multiselect("Areas (full summary)", area_options, default=area_options, key="full_status_area_multiselect")
-    df = df[df["area"].isin(selected_areas)]
+    selected_areas_full = st.sidebar.multiselect("Filter by areas (full summary, leave empty for all)", area_options, key="areas_full_multiselect")
+    
+    if selected_areas_full:
+        df = df[df["area"].isin(selected_areas_full)]
+    
     outage_type_options = sorted(df["outage_type"].unique())
     selected_types = st.sidebar.multiselect("Outage types (full summary)", outage_type_options, default=outage_type_options, key="full_status_type_multiselect")
     df = df[df["outage_type"].isin(selected_types)]
@@ -296,16 +306,20 @@ def render_area_full_outage_summary():
     table = df.pivot_table(index=["area", "year"], columns=["outage_type", "planned_status"], values="count", aggfunc="sum", fill_value=0)
     st.dataframe(table, use_container_width=True)
     st.caption("Table shows each area/year and the number of planned/unplanned outages for each type, filtered by year and area.")
+    
+    # Aggregate data across all years for chart visualization
+    df_agg = df.groupby(["area", "outage_type", "planned_status"])["count"].sum().reset_index()
+    
     import altair as alt
-    chart = alt.Chart(df).mark_bar().encode(
+    chart = alt.Chart(df_agg).mark_bar().encode(
         x=alt.X("area:N", title="Area", sort="-y"),
         y=alt.Y("count:Q", title="Total Outages", stack=True),
         color=alt.Color("outage_type:N", title="Outage Type"),
         column=alt.Column("planned_status:N", title="Planned/Unplanned"),
-        tooltip=["area", "year", "outage_type", "planned_status", "count"]
+        tooltip=["area", "outage_type", "planned_status", "count"]
     ).properties(width=350, height=400)
     st.altair_chart(chart, use_container_width=True)
-    st.caption("Stacked bar chart shows planned/unplanned outages by type for each area.")
+    st.caption("Stacked bar chart shows total planned/unplanned outages by type for each area (summed across all selected years).")
     top_n = st.sidebar.slider("Show top N Areas with most outages", min_value=1, max_value=30, value=10, key="top_n_outage_areas_table")
     st.subheader(f"Top {top_n} Areas with Most Outages")
     total_outages = df.groupby("area")["count"].sum().reset_index().sort_values("count", ascending=False)
