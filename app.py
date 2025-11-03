@@ -94,7 +94,7 @@ def _join_items(items: Iterable) -> str:
 
 
 def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    st.sidebar.header("General Message Filters")
+    st.sidebar.header("📅 Date Range")
     min_date = df["publication_date_dt"].min()
     max_date = df["publication_date_dt"].max()
     if min_date is None or pd.isna(min_date):
@@ -113,14 +113,25 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     else:
         start = start_date
         end = end_date
+    
+    st.sidebar.divider()
+    st.sidebar.header("📊 Message Type")
     type_options = sorted(df["message_type_label"].unique())
-    selected_types = st.sidebar.multiselect("Message types", type_options, default=type_options)
+    selected_types = st.sidebar.multiselect("Select message types", type_options, default=type_options)
+    
+    st.sidebar.divider()
+    st.sidebar.header("🌍 Areas")
     all_areas = sorted({area for areas in df["area_names"] for area in areas})
-    st.sidebar.subheader("Area Filtering")
-    selected_areas = st.sidebar.multiselect("Filter by areas (leave empty for all)", all_areas)
+    selected_areas = st.sidebar.multiselect("Select areas to view", all_areas, help="Leave empty to show all areas")
+    
+    st.sidebar.divider()
+    st.sidebar.header("🏢 Publishers")
     publishers = sorted(df["publisher_name"].unique())
-    selected_publishers = st.sidebar.multiselect("Publishers", publishers)
-    search_term = st.sidebar.text_input("Search remarks", "")
+    selected_publishers = st.sidebar.multiselect("Select publishers", publishers, help="Leave empty to show all publishers")
+    
+    st.sidebar.divider()
+    st.sidebar.header("🔍 Search")
+    search_term = st.sidebar.text_input("Search in remarks", "", placeholder="Enter keywords...")
     filtered = df.copy()
     if start and end:
         start_ts = pd.to_datetime(start, utc=True)
@@ -255,17 +266,19 @@ def render_outage_type_status_summary():
 
 
 def render_outage_events_interactive():
-    st.sidebar.header("Outage Events Filters")
-    mw_threshold = st.sidebar.slider("MW threshold", min_value=100, max_value=2000, value=400, step=50, key="event_mw_slider")
+    st.sidebar.divider()
+    st.sidebar.header("⚡ Outage Events Filters")
+    mw_threshold = st.sidebar.slider("MW threshold", min_value=100, max_value=2000, value=400, step=50, key="event_mw_slider", help="Filter outages by minimum MW capacity")
+    status = st.sidebar.selectbox("Outage status", ["Both", "Planned", "Unplanned"], key="event_status_select")
+    
     st.subheader(f"Areas with Outages ≥ {mw_threshold} MW")
     events_path = Path(__file__).resolve().parent / "data" / "umm_area_outage_events.csv"
     if not events_path.exists():
         st.warning("Area outage events CSV not found.")
         return
     df = pd.read_csv(events_path)
-    status = st.sidebar.selectbox("Outage status (event)", ["Planned", "Unplanned", "Both"], key="event_status_select")
     area_options = sorted(df["area"].unique())
-    selected_areas_event = st.sidebar.multiselect("Filter by areas (event, leave empty for all)", area_options, key="event_area_multiselect")
+    selected_areas_event = st.sidebar.multiselect("Select areas", area_options, key="event_area_multiselect", help="Leave empty to show all areas")
     if selected_areas_event:
         filtered = df[df["area"].isin(selected_areas_event)]
     else:
@@ -279,29 +292,33 @@ def render_outage_events_interactive():
 
 
 def render_area_full_outage_summary():
-    st.sidebar.header("Full Outage Summary Filters")
+    st.sidebar.divider()
+    st.sidebar.header("📈 Full Outage Summary")
+    
     st.subheader("Area-level Full Outage Summary")
     summary_path = Path(__file__).resolve().parent / "data" / "umm_area_outage_full_status_summary.csv"
     if not summary_path.exists():
         st.warning("Area-level full outage summary CSV not found.")
         return
     df = pd.read_csv(summary_path)
+    
     year_options = sorted(df["year"].dropna().unique())
-    selected_years = st.sidebar.multiselect("Year (full summary)", year_options, default=year_options, key="full_status_year_multiselect")
+    selected_years = st.sidebar.multiselect("📅 Years", year_options, default=year_options, key="full_status_year_multiselect", help="Select years to analyze")
     df = df[df["year"].isin(selected_years)]
     
     # Area inclusion logic
     area_options = sorted(df["area"].unique())
-    selected_areas_full = st.sidebar.multiselect("Filter by areas (full summary, leave empty for all)", area_options, key="areas_full_multiselect")
+    selected_areas_full = st.sidebar.multiselect("🌍 Areas", area_options, key="areas_full_multiselect", help="Leave empty to show all areas")
     
     if selected_areas_full:
         df = df[df["area"].isin(selected_areas_full)]
     
     outage_type_options = sorted(df["outage_type"].unique())
-    selected_types = st.sidebar.multiselect("Outage types (full summary)", outage_type_options, default=outage_type_options, key="full_status_type_multiselect")
+    selected_types = st.sidebar.multiselect("📊 Outage types", outage_type_options, default=outage_type_options, key="full_status_type_multiselect")
     df = df[df["outage_type"].isin(selected_types)]
+    
     status_options = ["Planned", "Unplanned"]
-    selected_status = st.sidebar.multiselect("Planned/Unplanned", status_options, default=status_options, key="full_status_status_multiselect")
+    selected_status = st.sidebar.multiselect("⚡ Status", status_options, default=status_options, key="full_status_status_multiselect")
     df = df[df["planned_status"].isin(selected_status)]
     table = df.pivot_table(index=["area", "year"], columns=["outage_type", "planned_status"], values="count", aggfunc="sum", fill_value=0)
     st.dataframe(table, use_container_width=True)
@@ -320,7 +337,9 @@ def render_area_full_outage_summary():
     ).properties(width=350, height=400)
     st.altair_chart(chart, use_container_width=True)
     st.caption("Stacked bar chart shows total planned/unplanned outages by type for each area (summed across all selected years).")
-    top_n = st.sidebar.slider("Show top N Areas with most outages", min_value=1, max_value=30, value=10, key="top_n_outage_areas_table")
+    
+    st.sidebar.divider()
+    top_n = st.sidebar.slider("🔝 Top N areas to display", min_value=1, max_value=30, value=10, key="top_n_outage_areas_table", help="Show only the top N areas with most outages")
     st.subheader(f"Top {top_n} Areas with Most Outages")
     total_outages = df.groupby("area")["count"].sum().reset_index().sort_values("count", ascending=False)
     top_areas = total_outages.head(top_n)["area"].tolist()
