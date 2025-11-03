@@ -52,11 +52,17 @@ def load_data(path: Path) -> pd.DataFrame:
             continue
         df[col] = df[col].apply(_parse_json_series)
 
-    df["area_names"] = df["areas_json"].apply(_extract_area_names)
+    df["area_names"] = df.apply(_extract_all_area_names, axis=1)
     df["publisher_codes"] = df["market_participants_json"].apply(
         lambda items: sorted({item.get("code") for item in items if isinstance(item, dict) and item.get("code")})
     )
     df["area_display"] = df["area_names"].apply(_join_items)
+    
+    # Extract production and generation unit information
+    df["production_unit_names"] = df["production_units_json"].apply(_extract_unit_names)
+    df["generation_unit_names"] = df["generation_units_json"].apply(_extract_unit_names)
+    df["production_units_display"] = df["production_unit_names"].apply(_join_items)
+    df["generation_units_display"] = df["generation_unit_names"].apply(_join_items)
 
     return df
 
@@ -89,8 +95,71 @@ def _extract_area_names(items: Sequence[dict]) -> List[str]:
     return sorted(set(names))
 
 
+def _extract_all_area_names(row) -> List[str]:
+    """Extract area names from areas_json AND from production/generation/transmission units"""
+    areas = set()
+    
+    # Get areas from areas_json
+    for item in row.get("areas_json", []):
+        if isinstance(item, dict) and item.get("name"):
+            areas.add(str(item["name"]))
+    
+    # Get areas from production units
+    for item in row.get("production_units_json", []):
+        if isinstance(item, dict) and item.get("areaName"):
+            areas.add(str(item["areaName"]))
+    
+    # Get areas from generation units
+    for item in row.get("generation_units_json", []):
+        if isinstance(item, dict) and item.get("areaName"):
+            areas.add(str(item["areaName"]))
+    
+    # Get areas from transmission units
+    for item in row.get("transmission_units_json", []):
+        if isinstance(item, dict):
+            # Transmission units may have inAreaName and outAreaName
+            if item.get("inAreaName"):
+                areas.add(str(item["inAreaName"]))
+            if item.get("outAreaName"):
+                areas.add(str(item["outAreaName"]))
+    
+    return sorted(areas)
+
+
 def _join_items(items: Iterable) -> str:
     return ", ".join(sorted({str(item) for item in items if item}))
+
+
+def _extract_unit_names(items: Sequence[dict]) -> List[str]:
+    """Extract unit names from production/generation units JSON"""
+    names = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        # Try different possible keys for unit name
+        name = item.get("name") or item.get("productionUnitName") or item.get("generationUnitName")
+        if name:
+            names.append(str(name))
+    return sorted(set(names))
+
+
+def _extract_unit_capacities(items: Sequence[dict]) -> dict:
+    """Extract unit capacities with their names"""
+    capacities = {}
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        name = item.get("name")
+        installed_capacity = item.get("installedCapacity")
+        available_capacity = item.get("availableCapacity")
+        unavailable_capacity = item.get("unavailableCapacity")
+        if name:
+            capacities[name] = {
+                "installed": installed_capacity,
+                "available": available_capacity,
+                "unavailable": unavailable_capacity
+            }
+    return capacities
 
 
 def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -265,6 +334,301 @@ def render_outage_type_status_summary():
     #     st.warning("Outage type status summary CSV not found.")
 
 
+def render_production_unit_analysis(df: pd.DataFrame):
+    """Analyze market events by production units and their associated price areas"""
+    st.sidebar.divider()
+    st.sidebar.header("🏭 Production Unit Analysis")
+    
+    st.subheader("Production Units and Market Events by Price Area")
+    st.caption("Analyze how production/generation units (like Kvilldal) relate to price areas through market unavailability messages")
+    
+    # Get all unique production units
+    all_production_units = sorted({unit for units in df["production_unit_names"] for unit in units if unit})
+    all_generation_units = sorted({unit for units in df["generation_unit_names"] for unit in units if unit})
+    
+    # Combine both types of units
+    all_units = sorted(set(all_production_units + all_generation_units))
+    
+    if not all_units:
+        st.warning("No production or generation units found in the current dataset.")
+        return
+    
+    # Filter by unit name
+    unit_search = st.sidebar.text_input("🔍 Search for unit (e.g., Kvilldal)", "", placeholder="Enter unit name...", key="unit_search")
+    
+    if unit_search:
+        matching_units = [u for u in all_units if unit_search.lower() in u.lower()]
+        selected_unit = st.sidebar.selectbox("Select unit", matching_units if matching_units else ["No matches found"], key="unit_select")
+    else:
+        selected_unit = st.sidebar.selectbox("Or select from all units", [""] + all_units, key="unit_select_all")
+    
+    # Filter by message type for unit analysis
+    unit_msg_types = st.sidebar.multiselect("Message types", 
+                                            ["Production unavailability", "Consumption unavailability", "Transmission outage"],
+                                            default=["Production unavailability"],
+                                            key="unit_msg_types")
+    
+    if selected_unit and selected_unit != "No matches found":
+        # Filter messages related to this unit
+        df_unit = df[
+            (df["production_unit_names"].apply(lambda units: selected_unit in units)) |
+            (df["generation_unit_names"].apply(lambda units: selected_unit in units))
+        ]
+        
+        if not unit_msg_types:
+            unit_msg_types = list(MESSAGE_TYPE_LABELS.values())
+        df_unit = df_unit[df_unit["message_type_label"].isin(unit_msg_types)]
+        
+        if df_unit.empty:
+            st.info(f"No messages found for unit '{selected_unit}' with selected message types.")
+            return
+        
+        # Extract unit location and capacity information from JSON
+        unit_areas = set()
+        unit_capacity = None
+        for _, row in df_unit.head(10).iterrows():  # Check first 10 rows for unit details
+            for prod_unit in row['production_units_json']:
+                if isinstance(prod_unit, dict):
+                    unit_name = prod_unit.get("name") or prod_unit.get("productionUnitName")
+                    if unit_name == selected_unit:
+                        if prod_unit.get("areaName"):
+                            unit_areas.add(prod_unit.get("areaName"))
+                        if not unit_capacity and prod_unit.get("installedCapacity"):
+                            unit_capacity = prod_unit.get("installedCapacity")
+            for gen_unit in row['generation_units_json']:
+                if isinstance(gen_unit, dict):
+                    unit_name = gen_unit.get("name") or gen_unit.get("generationUnitName")
+                    if unit_name == selected_unit:
+                        if gen_unit.get("areaName"):
+                            unit_areas.add(gen_unit.get("areaName"))
+                        if not unit_capacity and gen_unit.get("installedCapacity"):
+                            unit_capacity = gen_unit.get("installedCapacity")
+        
+        # Display unit overview
+        st.markdown("### 📍 Unit Overview")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        col1.metric("Location (Price Area)", ", ".join(sorted(unit_areas)) if unit_areas else "Unknown")
+        col2.metric("Installed Capacity", f"{unit_capacity:,} MW" if unit_capacity else "N/A")
+        
+        # Display ownership/publisher information
+        publishers = df_unit['publisher_name'].value_counts()
+        primary_owner = publishers.index[0] if len(publishers) > 0 else "Unknown"
+        col3.metric("Primary Publisher", primary_owner[:20] + "..." if len(primary_owner) > 20 else primary_owner)
+        col4.metric("Total Events", f"{len(df_unit):,}")
+        
+        if len(publishers) > 1:
+            st.caption(f"📢 Also published by: {', '.join(publishers.index[1:3])}")
+        
+        # Display market event metrics
+        st.markdown("### 📊 Market Event Statistics")
+        col1, col2, col3 = st.columns(3)
+        all_event_areas = set([a for areas in df_unit['area_names'] for a in areas])
+        col1.metric("Affected Price Areas", f"{len(all_event_areas):,}")
+        col2.metric("Unique Publishers", f"{df_unit['publisher_name'].nunique():,}")
+        col3.metric("Date Range", f"{df_unit['publication_date_dt'].min().year}-{df_unit['publication_date_dt'].max().year}")
+        
+        if all_event_areas:
+            st.caption(f"🌍 Affected areas: {', '.join(sorted(all_event_areas))}")
+        
+        # Events by year
+        st.markdown(f"### 📅 Unavailability Events for {selected_unit} Over Time")
+        st.caption("Shows the frequency of unavailability messages for this production unit over the years")
+        
+        yearly_events = (
+            df_unit.dropna(subset=["publication_date_dt"])
+            .assign(year=lambda x: x["publication_date_dt"].dt.year)
+            .groupby(["year", "message_type_label"])
+            .size()
+            .reset_index(name="count")
+        )
+        
+        if not yearly_events.empty:
+            # Show summary statistics
+            total_by_type = yearly_events.groupby("message_type_label")["count"].sum().to_dict()
+            summary_text = " | ".join([f"{msg_type}: {count:,} events" for msg_type, count in total_by_type.items()])
+            st.info(f"**Total across all years:** {summary_text}")
+            
+            chart = alt.Chart(yearly_events).mark_bar().encode(
+                x=alt.X("year:O", title="Year"),
+                y=alt.Y("count:Q", title="Number of Market Messages"),
+                color=alt.Color("message_type_label:N", title="Message Type"),
+                tooltip=["year:O", "message_type_label", "count"]
+            )
+            st.altair_chart(chart, use_container_width=True)
+        
+        # Events by area
+        st.markdown(f"### 🌍 Market Events by Price Area for {selected_unit}")
+        st.caption("Shows which price areas are affected by this unit's unavailability events (unit may be located in one area but affect multiple areas)")
+        
+        area_events = []
+        for _, row in df_unit.iterrows():
+            for area in row["area_names"]:
+                area_events.append({
+                    "area": area,
+                    "message_type": row["message_type_label"],
+                    "year": row["publication_date_dt"].year if pd.notna(row["publication_date_dt"]) else None,
+                    "planned_status": "Planned" if "Planned" in str(row.get("remarks", "")) else "Unplanned"
+                })
+        
+        if area_events:
+            df_area_events = pd.DataFrame(area_events)
+            area_summary = df_area_events.groupby(["area", "message_type"]).size().reset_index(name="count")
+            area_summary = area_summary.sort_values("count", ascending=False)
+            
+            # Show which areas are most affected
+            st.info(f"**Most affected area:** {area_summary.iloc[0]['area']} with {area_summary.iloc[0]['count']:,} events")
+            
+            chart = alt.Chart(area_summary).mark_bar().encode(
+                x=alt.X("count:Q", title="Number of Market Messages"),
+                y=alt.Y("area:N", sort="-x", title="Price Area"),
+                color=alt.Color("message_type:N", title="Message Type"),
+                tooltip=["area", "message_type", "count"]
+            )
+            st.altair_chart(chart, use_container_width=True)
+            
+            # Show detailed breakdown by area
+            with st.expander("📋 View detailed breakdown by price area"):
+                area_detail = df_area_events.groupby(["area", "message_type", "year"]).size().reset_index(name="count")
+                area_pivot = area_detail.pivot_table(
+                    index=["area", "message_type"],
+                    columns="year",
+                    values="count",
+                    aggfunc="sum",
+                    fill_value=0
+                )
+                st.dataframe(area_pivot, use_container_width=True)
+                st.caption("This table shows the number of events per area, message type, and year")
+        
+        # Detailed event table
+        st.markdown(f"### 📄 All Market Messages for {selected_unit}")
+        st.caption("Complete list of all unavailability messages published for this production unit")
+        display_cols = ["publication_date", "message_type_label", "event_status_label", 
+                       "area_display", "event_start", "event_stop", "publisher_name", "remarks"]
+        unit_table = df_unit[display_cols].copy()
+        unit_table.columns = ["Publication Date", "Message Type", "Status", "Price Area(s)", 
+                              "Event Start", "Event Stop", "Publisher", "Remarks"]
+        st.dataframe(unit_table, use_container_width=True, hide_index=True)
+        
+        # Download button
+        csv_bytes = unit_table.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            f"Download {selected_unit} events as CSV",
+            data=csv_bytes,
+            file_name=f"{selected_unit.replace(' ', '_')}_events.csv",
+            mime="text/csv",
+        )
+    else:
+        st.info("💡 Search or select a production/generation unit above to view its market events and price area relationships.")
+        
+        # Show overview of units by price area
+        st.markdown("### 🗺️ Production Units by Price Area")
+        st.caption("Overview of how production/generation units are distributed across price areas")
+        
+        # Extract unit-area relationships
+        unit_area_map = []
+        for _, row in df.iterrows():
+            for prod_unit in row['production_units_json']:
+                if isinstance(prod_unit, dict):
+                    unit_name = prod_unit.get("name") or prod_unit.get("productionUnitName")
+                    area_name = prod_unit.get("areaName")
+                    capacity = prod_unit.get("installedCapacity")
+                    if unit_name and area_name:
+                        unit_area_map.append({
+                            "Unit": unit_name,
+                            "Price Area": area_name,
+                            "Capacity (MW)": capacity if capacity else 0,
+                            "Type": "Production"
+                        })
+            for gen_unit in row['generation_units_json']:
+                if isinstance(gen_unit, dict):
+                    unit_name = gen_unit.get("name") or gen_unit.get("generationUnitName")
+                    area_name = gen_unit.get("areaName")
+                    capacity = gen_unit.get("installedCapacity")
+                    if unit_name and area_name:
+                        unit_area_map.append({
+                            "Unit": unit_name,
+                            "Price Area": area_name,
+                            "Capacity (MW)": capacity if capacity else 0,
+                            "Type": "Generation"
+                        })
+        
+        if unit_area_map:
+            df_unit_area = pd.DataFrame(unit_area_map).drop_duplicates()
+            
+            # Summary by area
+            area_summary = df_unit_area.groupby("Price Area").agg({
+                "Unit": "count",
+                "Capacity (MW)": "sum"
+            }).reset_index()
+            area_summary.columns = ["Price Area", "Number of Units", "Total Capacity (MW)"]
+            area_summary = area_summary.sort_values("Total Capacity (MW)", ascending=False)
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Total Unique Units", f"{len(df_unit_area):,}")
+                st.metric("Total Capacity", f"{df_unit_area['Capacity (MW)'].sum():,.0f} MW")
+            with col2:
+                st.metric("Price Areas", f"{df_unit_area['Price Area'].nunique():,}")
+                top_area = area_summary.iloc[0] if len(area_summary) > 0 else None
+                if top_area is not None:
+                    st.metric("Largest Area (by capacity)", f"{top_area['Price Area']}")
+            
+            # Chart showing units per area
+            st.bar_chart(area_summary.set_index("Price Area")["Number of Units"])
+            st.caption("Number of production/generation units per price area")
+            
+            # Detailed table
+            with st.expander("📊 View detailed unit-area breakdown"):
+                df_unit_area_sorted = df_unit_area.sort_values(["Price Area", "Capacity (MW)"], ascending=[True, False])
+                st.dataframe(df_unit_area_sorted, use_container_width=True, hide_index=True)
+                st.caption(f"Showing {len(df_unit_area_sorted):,} unit-price area relationships")
+        
+        # Show a sample of unit-publisher relationships
+        with st.expander("📋 View Unit-Publisher/Owner Relationships"):
+            st.write("This table shows which publishers/owners are associated with production units:")
+            
+            # Create a mapping of units to their publishers
+            unit_publisher_map = []
+            for _, row in df.iterrows():
+                publishers = row['publisher_name']
+                for unit in row['production_unit_names']:
+                    unit_publisher_map.append({"Unit": unit, "Publisher/Owner": publishers})
+                for unit in row['generation_unit_names']:
+                    unit_publisher_map.append({"Unit": unit, "Publisher/Owner": publishers})
+            
+            if unit_publisher_map:
+                df_mapping = pd.DataFrame(unit_publisher_map)
+                # Get most common publisher for each unit
+                unit_owners = df_mapping.groupby("Unit")["Publisher/Owner"].agg(
+                    lambda x: x.value_counts().index[0]
+                ).reset_index()
+                unit_owners.columns = ["Production/Generation Unit", "Primary Publisher/Owner"]
+                unit_owners = unit_owners.sort_values("Production/Generation Unit")
+                
+                # Add search functionality
+                owner_search = st.text_input("Search units or owners:", "", placeholder="e.g., Hafslund, Aurland...", key="owner_search")
+                if owner_search:
+                    unit_owners = unit_owners[
+                        unit_owners["Production/Generation Unit"].str.contains(owner_search, case=False, na=False) |
+                        unit_owners["Primary Publisher/Owner"].str.contains(owner_search, case=False, na=False)
+                    ]
+                
+                st.dataframe(unit_owners, use_container_width=True, hide_index=True)
+                st.caption(f"Showing {len(unit_owners):,} unit-publisher relationships")
+                
+                # Download button
+                csv_bytes = unit_owners.to_csv(index=False).encode("utf-8")
+                st.download_button(
+                    "Download unit-publisher mapping as CSV",
+                    data=csv_bytes,
+                    file_name="unit_publisher_mapping.csv",
+                    mime="text/csv",
+                )
+            else:
+                st.warning("No unit-publisher relationships found in the data.")
+
+
 def render_outage_events_interactive():
     st.sidebar.divider()
     st.sidebar.header("⚡ Outage Events Filters")
@@ -367,6 +731,10 @@ def main() -> None:
     render_charts(filtered)
     render_table(filtered)
 
+    # Production Unit Analysis Section
+    st.divider()
+    render_production_unit_analysis(df)
+
     # Add top outage areas query with filter
     # st.sidebar.header("Top Outage Area Filter")
     # top_n = st.sidebar.slider("Show top N areas with most outages", min_value=1, max_value=20, value=5)
@@ -374,7 +742,10 @@ def main() -> None:
     # top_n_status = st.sidebar.slider("Show top N areas by outage type & status", min_value=1, max_value=20, value=10)
     # render_outage_type_status_summary()
 
+    st.divider()
     render_outage_events_interactive()
+    
+    st.divider()
     render_area_full_outage_summary()
 
     earliest = df["publication_date_dt"].min()
