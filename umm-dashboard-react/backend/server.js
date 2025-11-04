@@ -672,6 +672,24 @@ app.get('/api/outages/summary', async (req, res) => {
   }
 });
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  const healthCheck = {
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    port: PORT,
+    csvPath: CSV_PATH,
+    csvExists: fs.existsSync(CSV_PATH),
+    buildPath: path.join(__dirname, '../frontend/build'),
+    buildExists: fs.existsSync(path.join(__dirname, '../frontend/build')),
+    indexHtmlExists: fs.existsSync(path.join(__dirname, '../frontend/build', 'index.html'))
+  };
+  
+  console.log('Health check:', JSON.stringify(healthCheck, null, 2));
+  res.json(healthCheck);
+});
+
 // Serve React app for all other routes (must be after API routes)
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
