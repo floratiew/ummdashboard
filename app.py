@@ -35,6 +35,7 @@ def load_data(path: Path) -> pd.DataFrame:
     df["event_status_label"] = df["event_status"].map(EVENT_STATUS_LABELS).fillna("Other")
     df["publisher_name"] = df["publisher_name"].fillna("Unknown")
     df["remarks"] = df["remarks"].fillna("")
+    df["unavailability_reason"] = df["unavailability_reason"].fillna("") if "unavailability_reason" in df.columns else ""
 
     json_columns = [
         "areas_json",
@@ -285,22 +286,119 @@ def render_charts(df: pd.DataFrame) -> None:
 
 
 def render_table(df: pd.DataFrame) -> None:
+    # Extract additional fields from JSON for display
+    table = df.copy()
+    
+    # Extract capacity information
+    def extract_capacity_info(row):
+        total_installed = 0
+        total_unavailable = 0
+        total_available = 0
+        
+        for unit in row.get('production_units_json', []):
+            if isinstance(unit, dict):
+                total_installed += unit.get('installedCapacity', 0) or 0
+                # Check time periods for unavailable capacity
+                for period in unit.get('timePeriods', []):
+                    if isinstance(period, dict):
+                        total_unavailable += period.get('unavailableCapacity', 0) or 0
+                        total_available += period.get('availableCapacity', 0) or 0
+                        break  # Just take first period
+        
+        for unit in row.get('generation_units_json', []):
+            if isinstance(unit, dict):
+                total_installed += unit.get('installedCapacity', 0) or 0
+                for period in unit.get('timePeriods', []):
+                    if isinstance(period, dict):
+                        total_unavailable += period.get('unavailableCapacity', 0) or 0
+                        total_available += period.get('availableCapacity', 0) or 0
+                        break
+        
+        return pd.Series({
+            'installed_mw': total_installed if total_installed > 0 else None,
+            'unavailable_mw': total_unavailable if total_unavailable > 0 else None,
+            'available_mw': total_available if total_available > 0 else None
+        })
+    
+    # Extract fuel type
+    def extract_fuel_type(row):
+        fuel_types = set()
+        fuel_map = {
+            1: "Nuclear", 2: "Lignite", 3: "Hard Coal", 4: "Natural Gas",
+            5: "Oil", 6: "Biomass", 7: "Geothermal", 8: "Waste",
+            9: "Wind Onshore", 10: "Wind Offshore", 11: "Solar", 12: "Hydro",
+            13: "Pumped Storage", 14: "Marine", 15: "Other"
+        }
+        
+        for unit in row.get('production_units_json', []) + row.get('generation_units_json', []):
+            if isinstance(unit, dict) and unit.get('fuelType'):
+                fuel_type_num = unit.get('fuelType')
+                fuel_types.add(fuel_map.get(fuel_type_num, f"Type {fuel_type_num}"))
+        
+        return ", ".join(sorted(fuel_types)) if fuel_types else None
+    
+    # Calculate duration
+    def calculate_duration(row):
+        if pd.notna(row.get('event_start_dt')) and pd.notna(row.get('event_stop_dt')):
+            duration = row['event_stop_dt'] - row['event_start_dt']
+            hours = duration.total_seconds() / 3600
+            if hours < 24:
+                return f"{hours:.1f}h"
+            else:
+                days = hours / 24
+                return f"{days:.1f}d"
+        return None
+    
+    # Apply extractions
+    capacity_info = table.apply(extract_capacity_info, axis=1)
+    table['installed_mw'] = capacity_info['installed_mw']
+    table['unavailable_mw'] = capacity_info['unavailable_mw']
+    table['available_mw'] = capacity_info['available_mw']
+    table['fuel_type'] = table.apply(extract_fuel_type, axis=1)
+    table['duration'] = table.apply(calculate_duration, axis=1)
+    
+    # Select and rename columns for display
     display_columns = [
         "publication_date",
         "message_type_label",
         "event_status_label",
         "publisher_name",
         "area_display",
+        "production_units_display",
+        "installed_mw",
+        "unavailable_mw",
+        "available_mw",
+        "fuel_type",
         "event_start",
         "event_stop",
+        "duration",
+        "unavailability_reason",
         "remarks",
     ]
+    
+    display_table = table[display_columns].copy()
+    display_table.columns = [
+        "Publication Date",
+        "Message Type",
+        "Status",
+        "Publisher",
+        "Price Area(s)",
+        "Unit(s)",
+        "Installed (MW)",
+        "Unavailable (MW)",
+        "Available (MW)",
+        "Fuel Type",
+        "Event Start",
+        "Event Stop",
+        "Duration",
+        "Reason",
+        "Remarks"
+    ]
+    
+    st.dataframe(display_table, use_container_width=True, hide_index=True)
+    st.caption(f"Showing {len(display_table):,} messages that match the selected filters.")
 
-    table = df[display_columns].copy()
-    st.dataframe(table, use_container_width=True, hide_index=True)
-    st.caption(f"Showing {len(table):,} messages that match the selected filters.")
-
-    csv_bytes = table.to_csv(index=False).encode("utf-8")
+    csv_bytes = display_table.to_csv(index=False).encode("utf-8")
     st.download_button(
         "Download filtered data as CSV",
         data=csv_bytes,
@@ -503,15 +601,95 @@ def render_production_unit_analysis(df: pd.DataFrame):
         # Detailed event table
         st.markdown(f"### 📄 All Market Messages for {selected_unit}")
         st.caption("Complete list of all unavailability messages published for this production unit")
-        display_cols = ["publication_date", "message_type_label", "event_status_label", 
-                       "area_display", "event_start", "event_stop", "publisher_name", "remarks"]
-        unit_table = df_unit[display_cols].copy()
-        unit_table.columns = ["Publication Date", "Message Type", "Status", "Price Area(s)", 
-                              "Event Start", "Event Stop", "Publisher", "Remarks"]
-        st.dataframe(unit_table, use_container_width=True, hide_index=True)
         
-        # Download button
-        csv_bytes = unit_table.to_csv(index=False).encode("utf-8")
+        # Extract capacity, fuel type, and duration for each row
+        def extract_unit_capacity_info(row):
+            total_installed = 0
+            total_unavailable = 0
+            total_available = 0
+            fuel_types = set()
+            
+            fuel_map = {
+                1: "Nuclear", 2: "Lignite", 3: "Hard Coal", 4: "Natural Gas",
+                5: "Oil", 6: "Biomass", 7: "Geothermal", 8: "Waste",
+                9: "Wind Onshore", 10: "Wind Offshore", 11: "Solar", 12: "Hydro",
+                13: "Pumped Storage", 14: "Marine", 15: "Other"
+            }
+            
+            # Check production units
+            for unit in row.get('production_units_json', []):
+                if isinstance(unit, dict):
+                    unit_name = unit.get("name") or unit.get("productionUnitName")
+                    if unit_name == selected_unit:
+                        total_installed += unit.get('installedCapacity', 0) or 0
+                        if unit.get('fuelType'):
+                            fuel_types.add(fuel_map.get(unit.get('fuelType'), f"Type {unit.get('fuelType')}"))
+                        # Get capacity from time periods
+                        for period in unit.get('timePeriods', []):
+                            if isinstance(period, dict):
+                                total_unavailable += period.get('unavailableCapacity', 0) or 0
+                                total_available += period.get('availableCapacity', 0) or 0
+                                break
+            
+            # Check generation units
+            for unit in row.get('generation_units_json', []):
+                if isinstance(unit, dict):
+                    unit_name = unit.get("name") or unit.get("generationUnitName")
+                    if unit_name == selected_unit:
+                        total_installed += unit.get('installedCapacity', 0) or 0
+                        if unit.get('fuelType'):
+                            fuel_types.add(fuel_map.get(unit.get('fuelType'), f"Type {unit.get('fuelType')}"))
+                        for period in unit.get('timePeriods', []):
+                            if isinstance(period, dict):
+                                total_unavailable += period.get('unavailableCapacity', 0) or 0
+                                total_available += period.get('availableCapacity', 0) or 0
+                                break
+            
+            return pd.Series({
+                'installed_mw': total_installed if total_installed > 0 else None,
+                'unavailable_mw': total_unavailable if total_unavailable > 0 else None,
+                'available_mw': total_available if total_available > 0 else None,
+                'fuel_type': ", ".join(sorted(fuel_types)) if fuel_types else None
+            })
+        
+        def calculate_unit_duration(row):
+            if pd.notna(row.get('event_start_dt')) and pd.notna(row.get('event_stop_dt')):
+                duration = row['event_stop_dt'] - row['event_start_dt']
+                hours = duration.total_seconds() / 3600
+                if hours < 24:
+                    return f"{hours:.1f}h"
+                else:
+                    days = hours / 24
+                    return f"{days:.1f}d"
+            return None
+        
+        # Apply extractions
+        unit_table = df_unit.copy()
+        capacity_info = unit_table.apply(extract_unit_capacity_info, axis=1)
+        unit_table['installed_mw'] = capacity_info['installed_mw']
+        unit_table['unavailable_mw'] = capacity_info['unavailable_mw']
+        unit_table['available_mw'] = capacity_info['available_mw']
+        unit_table['fuel_type'] = capacity_info['fuel_type']
+        unit_table['duration'] = unit_table.apply(calculate_unit_duration, axis=1)
+        
+        # Select columns for display
+        display_cols = [
+            "publication_date", "message_type_label", "event_status_label", 
+            "area_display", "event_start", "event_stop", "duration",
+            "installed_mw", "unavailable_mw", "available_mw", "fuel_type",
+            "publisher_name", "remarks"
+        ]
+        unit_display = unit_table[display_cols].copy()
+        unit_display.columns = [
+            "Publication Date", "Message Type", "Status", "Price Area(s)", 
+            "Event Start", "Event Stop", "Duration",
+            "Installed (MW)", "Unavailable (MW)", "Available (MW)", "Fuel Type",
+            "Publisher", "Remarks"
+        ]
+        st.dataframe(unit_display, use_container_width=True, hide_index=True)
+        
+        # Download button with enhanced fields
+        csv_bytes = unit_display.to_csv(index=False).encode("utf-8")
         st.download_button(
             f"Download {selected_unit} events as CSV",
             data=csv_bytes,
