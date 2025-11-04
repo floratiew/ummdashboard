@@ -11,6 +11,11 @@ const PORT = process.env.PORT || 5001;
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from React build (for production)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+}
+
 // Path to CSV data
 const CSV_PATH = path.join(__dirname, '../../data/umm_messages1.csv');
 
@@ -667,7 +672,17 @@ app.get('/api/outages/summary', async (req, res) => {
   }
 });
 
+// Serve React app for all other routes (must be after API routes)
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  });
+}
+
 app.listen(PORT, () => {
   console.log(`🚀 Nord Pool UMM Backend running on http://localhost:${PORT}`);
   console.log(`📊 Loading data from: ${CSV_PATH}`);
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`🌐 Serving React app from: ${path.join(__dirname, '../frontend/build')}`);
+  }
 });

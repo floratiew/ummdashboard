@@ -1,4 +1,79 @@
-# Nord Pool UMM Dashboard - React + Node.js
+# UMM Dashboard
+
+Nord Pool UMM (Urgent Market Messages) Dashboard - React + Node.js
+
+## 🚀 Deployment on Render (FREE)
+
+### Quick Deploy
+1. Push this repo to GitHub
+2. Go to [Render Dashboard](https://dashboard.render.com/)
+3. Click "New +" → "Web Service"
+4. Connect your GitHub repo (`umm-dashboard-react` folder)
+5. Use these settings:
+   - **Name**: `umm-dashboard`
+   - **Environment**: `Node`
+   - **Build Command**: `npm run render-build`
+   - **Start Command**: `npm run render-start`
+   - **Instance Type**: `Free`
+
+### Environment Variables (Optional)
+- `NODE_ENV`: `production`
+- `PORT`: (Leave empty, Render sets this automatically)
+
+### ⚠️ Note about Free Tier
+- Spins down after 15 minutes of inactivity
+- Takes ~30 seconds to wake up on first request
+- Perfect for demos and testing!
+
+## 💻 Local Development
+
+```bash
+# Install all dependencies
+npm run install-all
+
+# Run backend only (http://localhost:5001)
+npm run dev:backend
+
+# Run frontend only (http://localhost:3001)
+npm run dev:frontend
+```
+
+## 📁 Project Structure
+
+```
+umm-dashboard-react/
+├── frontend/          # React app
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── DashboardView.js
+│   │   │   ├── ProductionUnitsView.js
+│   │   │   └── OutagesView.js
+│   │   └── App.js
+│   └── package.json
+├── backend/           # Express API
+│   ├── server.js
+│   └── package.json
+├── data/              # CSV data files
+│   └── umm_messages1.csv
+└── package.json       # Root build scripts
+```
+
+## 🔧 Tech Stack
+
+- **Frontend**: React 18, Material-UI 5, Chart.js 4
+- **Backend**: Node.js, Express 4, CSV Parser
+- **Deployment**: Render (Free tier)
+
+## 📊 Features
+
+- 📋 Real-time UMM message dashboard
+- 🏭 Production unit analysis with year/type/status filters
+- ⚡ Outage analysis with MW threshold filtering (100-2000 MW)
+- 🌐 Full area rankings showing all areas before filtering
+- 📈 Planned/Unplanned/Unknown breakdown with percentages
+- 📊 Interactive stacked bar charts with rounded corners
+- 🔍 Advanced filtering by year, area, message type
+- 📱 Responsive dark theme with gradient UI
 
 A modern, beautiful dashboard for visualizing Nord Pool UMM (Urgent Market Messages) data with React.js frontend and Node.js backend.
 

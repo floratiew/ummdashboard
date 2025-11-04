@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: umm-dashboard
+    env: node
+    buildCommand: npm run render-build
+    startCommand: npm run render-start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
