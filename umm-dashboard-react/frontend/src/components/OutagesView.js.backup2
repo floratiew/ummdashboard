@@ -1,0 +1,117 @@
+import React, { useState, useEffect } from 'react';
+import { Box, Card, CardContent, Typography, Grid, Slider, FormControl, InputLabel, Select, MenuItem, Chip, Autocomplete, TextField } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import axios from 'axios';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+function OutagesView() {
+  const [mwThreshold, setMwThreshold] = useState(400);
+  const [status, setStatus] = useState('Both');
+  const [selectedAreas, setSelectedAreas] = useState([]);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchOutageData();
+  }, [mwThreshold, status, selectedAreas]);
+
+  const fetchOutageData = async () => {
+    setLoading(true);
+    try {
+      const params = { mwThreshold, status };
+      if (selectedAreas.length > 0) {
+        params.areas = selectedAreas.join(',');
+      }
+      const response = await axios.get('/api/outages/area-events', { params });
+      setData(response.data);
+    } catch (error) {
+      console.error('Error fetching outage data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columns = [
+    { field: 'area', headerName: 'Area', width: 100 },
+    { field: 'mw', headerName: 'MW', width: 120, valueFormatter: (params) => `${params.value?.toFixed(1)} MW` },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { field: 'publicationDate', headerName: 'Publication Date', width: 200, valueFormatter: (params) => new Date(params.value).toLocaleString() },
+    { field: 'remarks', headerName: 'Remarks', flex: 1, minWidth: 300 }
+  ];
+
+  const rows = data?.events?.map((event, idx) => ({ id: idx, ...event })) || [];
+
+  return (
+    <Box>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" sx={{ mb: 1, fontWeight: 700 }}>⚡ Areas with Outages ≥ {mwThreshold} MW</Typography>
+        <Typography color="text.secondary">Filter outages by MW threshold and planned/unplanned status</Typography>
+      </Box>
+
+      <Card sx={{ mb: 4, p: 3 }}>
+        <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>🔍 Filters</Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <Typography gutterBottom>MW Threshold: {mwThreshold} MW</Typography>
+            <Slider value={mwThreshold} onChange={(e, newValue) => setMwThreshold(newValue)} min={100} max={2000} step={50} marks={[{ value: 100, label: '100' }, { value: 400, label: '400' }, { value: 1000, label: '1000' }, { value: 2000, label: '2000' }]} valueLabelDisplay="auto" sx={{ color: '#667eea', '& .MuiSlider-thumb': { '&:hover, &.Mui-focusVisible': { boxShadow: '0px 0px 0px 8px rgba(102, 126, 234, 0.16)' } } }} />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth>
+              <InputLabel>Outage Status</InputLabel>
+              <Select value={status} label="Outage Status" onChange={(e) => setStatus(e.target.value)}>
+                <MenuItem value="Both">Both</MenuItem>
+                <MenuItem value="Planned">Planned</MenuItem>
+                <MenuItem value="Unplanned">Unplanned</MenuItem>
+                <MenuItem value="Unknown">Unknown</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Autocomplete multiple options={data?.uniqueAreas || []} value={selectedAreas} onChange={(event, newValue) => setSelectedAreas(newValue)} renderInput={(params) => <TextField {...params} label="Filter by Area" placeholder="Select areas..." />} renderTags={(value, getTagProps) => value.map((option, index) => <Chip label={option} {...getTagProps({ index })} key={index} size="small" sx={{ backgroundColor: 'rgba(102, 126, 234, 0.2)' }} />)} />
+          </Grid>
+        </Grid>
+        {(mwThreshold !== 400 || status !== 'Both' || selectedAreas.length > 0) && (
+          <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            <Typography variant="caption" color="text.secondary" sx={{ alignSelf: 'center' }}>Active filters:</Typography>
+            {mwThreshold !== 400 && <Chip label={`≥ ${mwThreshold} MW`} onDelete={() => setMwThreshold(400)} size="small" color="primary" />}
+            {status !== 'Both' && <Chip label={`Status: ${status}`} onDelete={() => setStatus('Both')} size="small" color="primary" />}
+            {selectedAreas.length > 0 && <Chip label={`${selectedAreas.length} area${selectedAreas.length > 1 ? 's' : ''} selected`} onDelete={() => setSelectedAreas([])} size="small" color="primary" />}
+          </Box>
+        )}
+      </Card>
+
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={4}>
+          <Card><CardContent><Typography color="text.secondary" gutterBottom variant="body2">Total Events</Typography><Typography variant="h4" sx={{ fontWeight: 700, color: '#667eea' }}>{data?.totalEvents?.toLocaleString() || '0'}</Typography></CardContent></Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Card><CardContent><Typography color="text.secondary" gutterBottom variant="body2">Areas Affected</Typography><Typography variant="h4" sx={{ fontWeight: 700, color: '#764ba2' }}>{data?.summary?.length?.toLocaleString() || '0'}</Typography></CardContent></Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Card><CardContent><Typography color="text.secondary" gutterBottom variant="body2">Total MW Impact</Typography><Typography variant="h4" sx={{ fontWeight: 700, color: '#f093fb' }}>{data?.summary?.reduce((sum, area) => sum + area.totalMW, 0)?.toFixed(0).toLocaleString() || '0'}</Typography></CardContent></Card>
+        </Grid>
+      </Grid>
+
+      {data?.summary && data.summary.length > 0 && (
+        <Card sx={{ mb: 4, p: 3 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>�� Total MW by Area</Typography>
+          <Bar data={{ labels: data.summary.slice(0, 15).map(s => s.area), datasets: [{ label: 'Total MW', data: data.summary.slice(0, 15).map(s => s.totalMW), backgroundColor: 'rgba(102, 126, 234, 0.8)', borderColor: 'rgba(102, 126, 234, 1)', borderWidth: 2 }] }} options={{ responsive: true, plugins: { legend: { display: false }, title: { display: true, text: `Top 15 Areas by Total MW Impact (≥${mwThreshold} MW, ${status})`, color: '#fff', font: { size: 14 } } }, scales: { y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255, 255, 255, 0.1)' }, title: { display: true, text: 'Total MW', color: '#fff' } }, x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } } }} />
+        </Card>
+      )}
+
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>📋 Outage Events (≥{mwThreshold} MW)</Typography>
+          <Box sx={{ height: 600, width: '100%' }}>
+            <DataGrid rows={rows} columns={columns} pageSize={10} rowsPerPageOptions={[10, 25, 50, 100]} disableSelectionOnClick loading={loading} sx={{ '& .MuiDataGrid-cell': { color: '#fff' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'rgba(102, 126, 234, 0.1)', color: '#fff', fontWeight: 600 }, '& .MuiDataGrid-footerContainer': { backgroundColor: 'rgba(102, 126, 234, 0.05)', color: '#fff' } }} />
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
+  );
+}
+
+export default OutagesView;
