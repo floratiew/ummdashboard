@@ -27,11 +27,15 @@ import {
   Menu as MenuIcon,
   ElectricBolt,
   Factory,
-  TrendingUp
+  TrendingUp,
+  Home as HomeIcon,
+  Map as MapIcon
 } from '@mui/icons-material';
 import DashboardView from './components/DashboardView';
 import ProductionUnitsView from './components/ProductionUnitsView';
 import OutagesView from './components/OutagesView';
+import LandingView from './components/LandingView';
+import MapView from './components/MapView';
 
 const drawerWidth = 240;
 
@@ -80,16 +84,18 @@ const theme = createTheme({
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [currentView, setCurrentView] = useState('dashboard');
+  const [currentView, setCurrentView] = useState('home');
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const menuItems = [
+    { text: 'Home', icon: <HomeIcon />, view: 'home' },
     { text: 'Dashboard', icon: <DashboardIcon />, view: 'dashboard' },
     { text: 'Production Units', icon: <Factory />, view: 'units' },
     { text: 'Outage Analysis', icon: <TrendingUp />, view: 'outages' },
+    { text: 'Geographic Map', icon: <MapIcon />, view: 'map' },
   ];
 
   const drawer = (
@@ -128,14 +134,18 @@ function App() {
 
   const renderView = () => {
     switch (currentView) {
+      case 'home':
+        return <LandingView onNavigate={setCurrentView} />;
       case 'dashboard':
         return <DashboardView />;
       case 'units':
         return <ProductionUnitsView />;
       case 'outages':
         return <OutagesView />;
+      case 'map':
+        return <MapView />;
       default:
-        return <DashboardView />;
+        return <LandingView onNavigate={setCurrentView} />;
     }
   };
 
