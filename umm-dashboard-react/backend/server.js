@@ -529,7 +529,10 @@ app.get('/api/outages/area-events', async (req, res) => {
     });
 
     // Apply filters
-    let filtered = results.filter(event => event.mw >= parseFloat(mwThreshold));
+    // First, exclude Unknown status messages (they're market information, not outages)
+    let filtered = results.filter(event => 
+      event.mw >= parseFloat(mwThreshold) && event.status !== 'Unknown'
+    );
     
     if (status !== 'Both') {
       filtered = filtered.filter(event => event.status === status);
@@ -570,7 +573,7 @@ app.get('/api/outages/area-events', async (req, res) => {
 // Outage summary by year, area, and type (planned/unplanned)
 app.get('/api/outages/summary', async (req, res) => {
   try {
-    const { year, areas, messageType, topN = 10 } = req.query;
+    const { year, areas, messageType, plannedStatus, topN = 10 } = req.query;
     
     const data = await loadData();
     let filtered = [...data];
@@ -648,7 +651,12 @@ app.get('/api/outages/summary', async (req, res) => {
       });
     });
 
-    const summaryArray = Object.values(summary);
+    let summaryArray = Object.values(summary);
+
+    // Filter by planned status if specified
+    if (plannedStatus) {
+      summaryArray = summaryArray.filter(item => item.plannedStatus === plannedStatus);
+    }
 
     // Get top N areas by total outage count
     const areaTotals = {};

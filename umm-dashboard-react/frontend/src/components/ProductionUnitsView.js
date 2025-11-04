@@ -229,11 +229,13 @@ function ProductionUnitsView() {
                     onChange={(e) => setSelectedPlannedStatus(e.target.value)}
                   >
                     <MenuItem value="">All Status</MenuItem>
-                    {unitData.plannedUnplannedBreakdown && Object.entries(unitData.plannedUnplannedBreakdown).map(([status, count]) => (
-                      <MenuItem key={status} value={status}>
-                        {status} ({count} events)
-                      </MenuItem>
-                    ))}
+                    {unitData.plannedUnplannedBreakdown && Object.entries(unitData.plannedUnplannedBreakdown)
+                      .filter(([status]) => status !== 'Unknown')
+                      .map(([status, count]) => (
+                        <MenuItem key={status} value={status}>
+                          {status} ({count} events)
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Grid>

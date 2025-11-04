@@ -53,6 +53,7 @@ function OutagesView() {
   const [summaryYear, setSummaryYear] = useState('');
   const [summaryMessageType, setSummaryMessageType] = useState('');
   const [summaryAreas, setSummaryAreas] = useState([]);
+  const [summaryPlannedStatus, setSummaryPlannedStatus] = useState('');
   const [topN, setTopN] = useState(10);
   const [summaryData, setSummaryData] = useState(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
@@ -63,7 +64,7 @@ function OutagesView() {
     } else {
       fetchSummaryAnalysis();
     }
-  }, [tab, mwThreshold, status, selectedAreas, summaryYear, summaryMessageType, summaryAreas, topN]);
+  }, [tab, mwThreshold, status, selectedAreas, summaryYear, summaryMessageType, summaryAreas, summaryPlannedStatus, topN]);
 
   const fetchAreaEvents = async () => {
     setLoading(true);
@@ -93,6 +94,7 @@ function OutagesView() {
       if (summaryYear) params.year = summaryYear;
       if (summaryMessageType) params.messageType = summaryMessageType;
       if (summaryAreas.length > 0) params.areas = summaryAreas.join(',');
+      if (summaryPlannedStatus) params.plannedStatus = summaryPlannedStatus;
 
       const response = await axios.get('/api/outages/summary', { params });
       setSummaryData(response.data);
@@ -195,7 +197,6 @@ function OutagesView() {
                     <MenuItem value="Both">All Status</MenuItem>
                     <MenuItem value="Planned">Planned</MenuItem>
                     <MenuItem value="Unplanned">Unplanned</MenuItem>
-                    <MenuItem value="Unknown">Unknown</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -346,7 +347,7 @@ function OutagesView() {
             </Typography>
             
             <Grid container spacing={3}>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2.4}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Year</InputLabel>
                   <Select
@@ -362,7 +363,7 @@ function OutagesView() {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2.4}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Message Type</InputLabel>
                   <Select
@@ -378,7 +379,22 @@ function OutagesView() {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2.4}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    value={summaryPlannedStatus}
+                    label="Status"
+                    onChange={(e) => setSummaryPlannedStatus(e.target.value)}
+                  >
+                    <MenuItem value="">All Status</MenuItem>
+                    <MenuItem value="Planned">Planned</MenuItem>
+                    <MenuItem value="Unplanned">Unplanned</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} md={2.4}>
                 <Autocomplete
                   multiple
                   size="small"
@@ -396,7 +412,7 @@ function OutagesView() {
                 />
               </Grid>
 
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2.4}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Top N Areas</InputLabel>
                   <Select
