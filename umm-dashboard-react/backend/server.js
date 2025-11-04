@@ -122,14 +122,19 @@ const calculateDuration = (start, stop) => {
 // Load and cache data
 let cachedData = null;
 let cacheTime = null;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes (longer to reduce reloads)
 
 const loadData = () => {
   return new Promise((resolve, reject) => {
     // Check cache
     if (cachedData && cacheTime && Date.now() - cacheTime < CACHE_DURATION) {
+      console.log(`Using cached data (${cachedData.length} rows)`);
       return resolve(cachedData);
     }
+    
+    // Check memory before loading
+    const memUsage = process.memoryUsage();
+    console.log(`Memory before load: ${Math.round(memUsage.heapUsed / 1024 / 1024)}MB / ${Math.round(memUsage.heapTotal / 1024 / 1024)}MB`);
     
     const data = [];
     fs.createReadStream(CSV_PATH)
@@ -153,10 +158,24 @@ const loadData = () => {
       .on('end', () => {
         cachedData = data;
         cacheTime = Date.now();
-        console.log(`Loaded ${data.length} messages`);
+        
+        const memUsage = process.memoryUsage();
+        console.log(`✅ Loaded ${data.length} messages`);
+        console.log(`Memory after load: ${Math.round(memUsage.heapUsed / 1024 / 1024)}MB / ${Math.round(memUsage.heapTotal / 1024 / 1024)}MB`);
+        console.log(`RSS: ${Math.round(memUsage.rss / 1024 / 1024)}MB`);
+        
+        // Force garbage collection if available
+        if (global.gc) {
+          global.gc();
+          console.log('Garbage collection triggered');
+        }
+        
         resolve(data);
       })
-      .on('error', reject);
+      .on('error', (err) => {
+        console.error('❌ Error loading CSV:', err);
+        reject(err);
+      });
   });
 };
 
