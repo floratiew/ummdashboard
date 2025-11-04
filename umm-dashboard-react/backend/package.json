@@ -4,7 +4,7 @@
   "description": "Nord Pool UMM Dashboard Backend API",
   "main": "server.js",
   "scripts": {
-    "start": "node --max-old-space-size=460 --expose-gc server.js",
+    "start": "node --max-old-space-size=2048 --expose-gc server.js",
     "dev": "nodemon server.js"
   },
   "keywords": ["nord-pool", "umm", "energy", "dashboard"],

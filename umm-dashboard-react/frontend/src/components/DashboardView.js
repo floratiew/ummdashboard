@@ -100,7 +100,6 @@ function DashboardView() {
       const [messagesRes, statsRes, filtersRes, yearlyRes] = await Promise.all([
         axios.get('/api/messages', {
           params: {
-            limit: 100,
             area: selectedArea,
             publisher: selectedPublisher,
             messageType: selectedMessageType,

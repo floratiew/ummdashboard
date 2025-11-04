@@ -192,7 +192,7 @@ app.get('/api/messages', async (req, res) => {
       area,
       publisher,
       search,
-      limit = 100,
+      limit = 999999, // Return all messages by default
       offset = 0
     } = req.query;
     

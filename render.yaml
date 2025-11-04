@@ -3,7 +3,7 @@ services:
     name: umm-dashboard
     env: node
     rootDir: umm-dashboard-react
-    buildCommand: git lfs install && git lfs pull && npm run render-build
+    buildCommand: npm run render-build
     startCommand: npm run render-start
     plan: free
     envVars:
@@ -11,5 +11,3 @@ services:
         value: production
       - key: NODE_OPTIONS
         value: "--max-old-space-size=460"
-      - key: GIT_LFS_SKIP_SMUDGE
-        value: "0"
