@@ -1,0 +1,53 @@
+{
+  "lastUpdated": "2025-11-05T10:30:00Z",
+  "summary": {
+    "aurland_total": {
+      "plantId": "aurland_total",
+      "plantName": "AURLAND TOTAL (Combined)",
+      "priceArea": "NO5",
+      "maxInstalled": 1273,
+      "currentProduction": 856.4,
+      "waterValue": 68.5,
+      "productionInterval": [650, 900],
+      "dayAheadPrice": 73.2,
+      "intraDayPrice": 74.0,
+      "efficiency": 67.2
+    },
+    "sima_combined": {
+      "plantId": "sima_combined",
+      "plantName": "Sima (Combined)",
+      "priceArea": "NO5",
+      "maxInstalled": 920,
+      "currentProduction": 620.3,
+      "waterValue": 69.8,
+      "productionInterval": [480, 620],
+      "dayAheadPrice": 73.2,
+      "intraDayPrice": 74.0,
+      "efficiency": 67.4
+    },
+    "saurdal": {
+      "plantId": "saurdal",
+      "plantName": "Saurdal kraftverk",
+      "priceArea": "NO2",
+      "maxInstalled": 640,
+      "currentProduction": 55.2,
+      "waterValue": 66.3,
+      "productionInterval": [40, 75],
+      "dayAheadPrice": 70.8,
+      "intraDayPrice": 71.5,
+      "efficiency": 8.6
+    },
+    "kvilldal": {
+      "plantId": "kvilldal",
+      "plantName": "Kvilldal (Suldal)",
+      "priceArea": "NO2",
+      "maxInstalled": 1240,
+      "currentProduction": 750.8,
+      "waterValue": 67.2,
+      "productionInterval": [500, 750],
+      "dayAheadPrice": 70.8,
+      "intraDayPrice": 71.5,
+      "efficiency": 60.5
+    }
+  }
+}

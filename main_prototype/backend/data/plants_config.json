@@ -1,0 +1,123 @@
+{
+  "priceAreaCodes": {
+    "NO1": "10YNO-1--------2",
+    "NO2": "10YNO-2--------T",
+    "NO3": "10YNO-3--------J",
+    "NO4": "10YNO-4--------9",
+    "NO5": "10Y1001A1001A48H"
+  },
+  "plants": [
+    {
+      "id": "aurland_total",
+      "name": "AURLAND TOTAL (Combined)",
+      "registered_resources": ["50WP00000000020T", "50WP00000000022P", "50WP00000000023N"],
+      "price_area": "NO5",
+      "max_installed": 1273,
+      "prodlimits": [0.0, 200.0, 400.0, 650.0, 900.0, 1150.0],
+      "pump_resources": [],
+      "entsoe_web_name": "Aurland",
+      "combine_from_units": [
+        "aurland1g1_hydro",
+        "aurland1g2_hydro",
+        "aurland1g3_hydro",
+        "aurland2g1_hydro",
+        "aurland2g2_hydro",
+        "aurland2g3_hydro",
+        "aurland3g1_hydro",
+        "aurland3g2_hydro"
+      ]
+    },
+    {
+      "id": "aurland1_combined",
+      "name": "AURLAND 1 (Combined)",
+      "registered_resources": [],
+      "price_area": "NO5",
+      "max_installed": 840,
+      "prodlimits": [0.0, 180.0, 360.0, 540.0, 720.0],
+      "pump_resources": [],
+      "entsoe_web_name": null,
+      "combine_from_units": [
+        "aurland1g1_hydro",
+        "aurland1g2_hydro",
+        "aurland1g3_hydro"
+      ]
+    },
+    {
+      "id": "aurland2_combined",
+      "name": "AURLAND 2 (Combined)",
+      "registered_resources": [],
+      "price_area": "NO5",
+      "max_installed": 143,
+      "prodlimits": [0.0, 30.0, 60.0, 90.0, 120.0],
+      "pump_resources": [],
+      "entsoe_web_name": null,
+      "combine_from_units": [
+        "aurland2g1_hydro",
+        "aurland2g2_hydro",
+        "aurland2g3_hydro"
+      ]
+    },
+    {
+      "id": "aurland3_combined",
+      "name": "AURLAND 3 (Combined)",
+      "registered_resources": [],
+      "price_area": "NO5",
+      "max_installed": 290,
+      "prodlimits": [0.0, 70.0, 140.0, 210.0, 260.0],
+      "pump_resources": [],
+      "entsoe_web_name": null,
+      "combine_from_units": [
+        "aurland3g1_hydro",
+        "aurland3g2_hydro"
+      ]
+    },
+    {
+      "id": "sima_combined",
+      "name": "Sima (Combined)",
+      "registered_resources": ["50WP000000008783", "50WV00000009609M"],
+      "price_area": "NO5",
+      "max_installed": 920,
+      "prodlimits": [0.0, 120.0, 240.0, 360.0, 480.0, 620.0, 750.0, 920.0],
+      "pump_resources": [],
+      "entsoe_web_name": "Sima",
+      "combine_from_units": [
+        "sima_g1_hydro",
+        "sima_g2_hydro",
+        "sima_g3_hydro",
+        "sima_g4_hydro"
+      ]
+    },
+    {
+      "id": "saurdal",
+      "name": "Saurdal kraftverk",
+      "registered_resources": ["50WP00000000607Y"],
+      "price_area": "NO2",
+      "max_installed": 640,
+      "prodlimits": [0.0, 25.0, 40.0, 55.0, 75.0],
+      "pump_resources": ["50WG00000001439U", "50WG00000001458Q"],
+      "entsoe_web_name": "Saurdal",
+      "combine_from_units": [
+        "saurdal_g1_hydro",
+        "saurdal_g2_hydro",
+        "saurdal_g3_hydro",
+        "saurdal_g4_hydro"
+      ]
+    },
+    {
+      "id": "kvilldal",
+      "name": "Kvilldal (Suldal)",
+      "registered_resources": ["50WP00000000389I"],
+      "price_area": "NO2",
+      "max_installed": 1240,
+      "prodlimits": [0.0, 250.0, 500.0, 750.0, 1000.0, 1240.0],
+      "pump_resources": [],
+      "entsoe_web_name": "Kvilldal",
+      "combine_from_units": [
+        "kvilldalg1_hydro",
+        "kvilldalg2_hydro",
+        "kvilldalg3_hydro",
+        "kvilldalg4_hydro"
+      ]
+    }
+  ]
+}

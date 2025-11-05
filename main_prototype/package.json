@@ -1,13 +1,18 @@
 {
-  "name": "main_prototype",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Self-contained prototype combining water values and UMM dashboards",
+  "name": "umm-watervalues-prototype-root",
+  "version": "1.0.0",
+  "description": "UMM and Water Values Dashboard Prototype - Root Project",
   "scripts": {
-    "start": "node server.js"
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+    "start-backend": "cd backend && npm start",
+    "start-frontend": "cd frontend && npm start",
+    "build": "cd frontend && npm run build"
   },
-  "dependencies": {
-    "csv-parse": "^5.5.0",
-    "express": "^4.19.2"
+  "keywords": ["umm", "water-values", "dashboard", "prototype"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

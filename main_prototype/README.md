@@ -1,59 +1,150 @@
-# Utility Vision Prototype
+# UMM and Water Values Dashboard Prototype
 
-Self-contained Node.js prototype that showcases the combined Water Values production insights and UMM outage transparency dashboards. The goal is to provide a demo-friendly experience inside the `main_prototype` folder without relying on the full production stacks.
+A self-contained web application prototype that combines the UMM (Urgent Market Messages) dashboard and Water Values monitoring system.
 
 ## Features
 
-- Simple login gate (accepts any credentials) to mimic the production authentication flow.
-- Landing page summarising hydro plant production, water value bands, and price curves.
-- Interactive charts powered by Chart.js using the real NO2 production extracts from `watervalues_production_app/WaterValues/sandbox/production`.
-- UMM feed page with searching and filtering across area, status, and participant, backed by live data pulled from the Nord Pool UMM API.
-- Derived outage tables and breakdowns calculated from the fetched messages (no more placeholder summaries).
-- All assets (frontend, backend, data files) live under `main_prototype` so the prototype is portable.
+- **Login Page**: Simple authentication (accepts any username/password for prototype purposes)
+- **Water Values Dashboard**: 
+  - Real-time power plant production monitoring
+  - Water value calculations
+  - Production interval analysis
+  - Day-ahead and intra-day price tracking
+  - Interactive charts and data tables
+- **UMM Dashboard**: 
+  - Urgent market messages monitoring
+  - Outage tracking and analysis
+  - Capacity availability statistics
+  - Advanced filtering capabilities
 
-## Project layout
+## Technology Stack
+
+- **Backend**: Node.js + Express
+- **Frontend**: React + Material-UI
+- **Database**: SQLite
+- **Charts**: Chart.js + react-chartjs-2
+
+## Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+## Installation
+
+1. Navigate to the main_prototype directory:
+```bash
+cd main_prototype
+```
+
+2. Install backend dependencies:
+```bash
+cd backend
+npm install
+```
+
+3. Install frontend dependencies:
+```bash
+cd ../frontend
+npm install
+```
+
+## Running the Application
+
+### Option 1: Run Both Services Simultaneously (Recommended)
+
+From the `main_prototype` directory:
+```bash
+npm start
+```
+
+This will start both the backend server (port 5000) and frontend development server (port 3000).
+
+### Option 2: Run Services Separately
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm start
+```
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm start
+```
+
+## Accessing the Application
+
+1. Open your browser and navigate to: `http://localhost:3000`
+2. Login with any username and password (e.g., username: `admin`, password: `admin`)
+3. You'll be redirected to the Water Values dashboard
+4. Use the sidebar navigation to switch between pages
+
+## Project Structure
 
 ```
 main_prototype/
-├── data/                      # Static datasets copied or authored for the prototype
-│   ├── water_values_no2.json          # Derived from Saurdal & Kvilldal processed feeds
-│   ├── umm_messages.csv               # Latest 500 Nord Pool UMM records
-│   ├── umm_area_total_outages.csv     # Legacy summaries (kept for comparison)
-│   ├── umm_area_large_outage_summary.csv
-│   └── umm_area_outage_type_status_summary.csv
-├── public/                    # Static React client served via Express
-│   ├── index.html
-│   ├── styles.css
-│   └── app.js
-├── server.js                  # Express server exposing JSON APIs + static hosting
-├── package.json
-└── README.md                  # This file
+├── backend/
+│   ├── server.js              # Express server
+│   ├── package.json
+│   └── data/
+│       ├── plants_config.json  # Power plant configurations
+│       ├── prices.json         # Price data
+│       ├── production_summary.json
+│       └── umm_messages.db     # SQLite database for UMM data
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── App.js              # Main app component with routing
+│   │   ├── index.js
+│   │   ├── index.css
+│   │   └── components/
+│   │       ├── LoginPage.js
+│   │       ├── DashboardLayout.js
+│   │       ├── WaterValuesPage.js
+│   │       └── UMMPage.js
+│   └── package.json
+├── package.json               # Root package with scripts
+└── README.md
 ```
 
-## Getting started
+## API Endpoints
 
-1. Install dependencies (already done once but safe to repeat):
+### Authentication
+- `POST /api/auth/login` - Login (accepts any credentials)
 
+### Water Values
+- `GET /api/watervalues/plants` - Get plant configurations
+- `GET /api/watervalues/summary` - Get production summary
+- `GET /api/watervalues/production/:plantId` - Get plant production data
+- `GET /api/watervalues/prices` - Get price data
+
+### UMM
+- `GET /api/umm/messages` - Get UMM messages (with filtering)
+- `GET /api/umm/stats` - Get UMM statistics
+- `GET /api/umm/filters` - Get available filter options
+- `GET /api/umm/yearly-stats` - Get yearly statistics
+
+## Notes
+
+- This is a prototype application designed for demonstration purposes
+- Authentication is simplified and accepts any credentials
+- Data is loaded from static JSON files and SQLite database
+- The application is self-contained within the `main_prototype` folder
+
+## Troubleshooting
+
+If you encounter any issues:
+
+1. Make sure all dependencies are installed:
    ```bash
-   cd main_prototype
-   npm install
+   cd backend && npm install
+   cd ../frontend && npm install
    ```
 
-2. Launch the prototype server:
+2. Check that ports 3000 and 5000 are available
 
-   ```bash
-   npm start
-   ```
+3. Ensure the SQLite database file exists at `backend/data/umm_messages.db`
 
-3. Visit http://localhost:3000 to interact with the UI. Use any username/password at the login prompt.
-
-## Data refresh
-
-- **Water values**: `data/water_values_no2.json` was generated from `watervalues_production_app/WaterValues/sandbox/production` (Saurdal & Kvilldal plants, price area NO2). Re-run the helper snippet from the repository root if you ingest newer processed CSVs.
-- **UMM feed**: `data/umm_messages.csv` contains the latest 500 messages retrieved via `python3 scrape_umm.py --max-records 500 --output main_prototype/data/umm_messages.csv`. Increase `--max-records` if you need a broader sample.
-
-## Notes & possible extensions
-
-- The datasets under `data/` are lightweight samples. Swap them for live extracts to demo real numbers.
-- React is loaded via CDN and compiled at runtime with Babel for simplicity. When ready, move to a Vite or Next.js build to bundle assets and add routing/auth integration.
-- The Express endpoints currently read static files synchronously on each request. For larger data or live integrations, promote this to cached loads or a proper data service layer.
+4. Clear browser cache and restart the servers if needed
