@@ -1,5 +1,5 @@
 #!/bin/bash
 
-echo "🔧 Starting Backend Server..."
+echo " Starting Backend Server..."
 cd backend
 npm start

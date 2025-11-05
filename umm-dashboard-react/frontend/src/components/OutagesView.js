@@ -116,9 +116,15 @@ function OutagesView() {
     { field: 'area', headerName: 'Area', width: 100 },
     { 
       field: 'mw', 
-      headerName: 'MW', 
-      width: 120,
-      valueFormatter: (params) => `${params.value?.toFixed(1)} MW`
+      headerName: 'MW (Distributed)', 
+      width: 150,
+      valueFormatter: (params) => `${params.value?.toFixed(1)} MW`,
+      renderCell: (params) => (
+        <div title={params.row.affectedAreas > 1 ? `Total message MW: ${params.row.totalMessageMW?.toFixed(1)} MW across ${params.row.affectedAreas} areas` : ''}>
+          {params.value?.toFixed(1)} MW
+          {params.row.affectedAreas > 1 && <span style={{ fontSize: '0.75em', color: '#9e9e9e', marginLeft: '4px' }}>({params.row.affectedAreas})</span>}
+        </div>
+      )
     },
     { field: 'status', headerName: 'Status', width: 120 },
     { 
@@ -160,8 +166,14 @@ function OutagesView() {
           {/* Filters */}
           <Card sx={{ mb: 4, p: 3 }}>
             <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-              🔍 Filters
+              Filters
             </Typography>
+            
+            <Box sx={{ mb: 3, p: 2, bgcolor: 'rgba(102, 126, 234, 0.1)', borderRadius: 2, border: '1px solid rgba(102, 126, 234, 0.3)' }}>
+              <Typography variant="body2" color="text.secondary">
+                 <strong>Note:</strong> MW values are filtered at the message level. When a message affects multiple areas, the MW is distributed equally among them for display purposes.
+              </Typography>
+            </Box>
             
             <Grid container spacing={3}>
               {/* MW Threshold Slider */}
@@ -312,7 +324,7 @@ function OutagesView() {
           <Card>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                📋 Outage Events (≥{mwThreshold} MW)
+                Outage Events (≥{mwThreshold} MW)
               </Typography>
               <Box sx={{ height: 600, width: '100%' }}>
                 <DataGrid

@@ -471,9 +471,14 @@ app.get('/api/outages/area-events', async (req, res) => {
     const rows = db.prepare(query).all(...params);
     
     // Process results - split area_names and create individual events
+    // Note: MW value is per MESSAGE, not per area. When splitting by area,
+    // we divide the MW by number of areas to avoid inflating the totals.
     const events = [];
     rows.forEach(row => {
-      const areaList = row.area_names ? row.area_names.split(',') : [];
+      const areaList = row.area_names ? row.area_names.split(',').map(a => a.trim()).filter(a => a) : [];
+      const numAreas = areaList.length || 1;
+      const mwPerArea = (row.unavailable_mw || 0) / numAreas; // Distribute MW across areas
+      
       areaList.forEach(area => {
         // Determine status
         let eventStatus = 'Unknown';
@@ -482,10 +487,12 @@ app.get('/api/outages/area-events', async (req, res) => {
         
         events.push({
           area: area.trim(),
-          mw: row.unavailable_mw || 0,
+          mw: mwPerArea, // Use distributed MW value
           status: eventStatus,
           publicationDate: row.publication_date,
-          remarks: row.remarks
+          remarks: row.remarks,
+          totalMessageMW: row.unavailable_mw || 0, // Keep original for reference
+          affectedAreas: numAreas
         });
       });
     });
@@ -496,7 +503,7 @@ app.get('/api/outages/area-events', async (req, res) => {
       if (!areaStats[event.area]) {
         areaStats[event.area] = { area: event.area, totalMW: 0, count: 0 };
       }
-      areaStats[event.area].totalMW += event.mw;
+      areaStats[event.area].totalMW += event.mw; // Now uses distributed MW
       areaStats[event.area].count += 1;
     });
     
