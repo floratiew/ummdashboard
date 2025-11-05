@@ -356,7 +356,7 @@ function MapView() {
               ))}
 
               {/* Production Unit Markers */}
-              {showUnits && unitMarkers.slice(0, 100).map((unit, idx) => {
+              {showUnits && unitMarkers.map((unit, idx) => {
                 const color = priceAreaLocations[unit.area]?.color || '#667eea';
                 return (
                   <Marker
@@ -426,7 +426,7 @@ function MapView() {
                     Displayed on Map
                   </Typography>
                   <Typography variant="h4" sx={{ fontWeight: 700, color: '#4facfe' }}>
-                    {Math.min(100, unitMarkers.length)}
+                    {unitMarkers.length.toLocaleString()}
                   </Typography>
                 </CardContent>
               </Card>
