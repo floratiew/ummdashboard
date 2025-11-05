@@ -1,0 +1,1550 @@
+[
+  {
+    "plant_id": "aurland_total",
+    "plant_name": "AURLAND TOTAL (Combined)",
+    "production_source": "unit-sum",
+    "production_csv": "processed/aurland_total_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland_total/aurland_total_minimum_water_values.csv",
+    "levels_file": "output/aurland_total/aurland_total_minimum_levels.csv",
+    "breakpoints_file": "output/aurland_total/aurland_total_minimum_breakpoints.csv",
+    "valid_breakpoints": 2,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      200.0,
+      400.0,
+      650.0,
+      900.0,
+      1150.0
+    ],
+    "max_installed": 1273,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland1g1_hydro",
+        "name": "AURLAND1G1      HYDRO",
+        "detail_id": "50WG00000000066B",
+        "csv": "processed/aurland1g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland1g2_hydro",
+        "name": "AURLAND1G2      HYDRO",
+        "detail_id": "50WG00000000070K",
+        "csv": "processed/aurland1g2_hydro_production.csv"
+      },
+      {
+        "slug": "aurland1g3_hydro",
+        "name": "AURLAND1G3      HYDRO",
+        "detail_id": "50WG000000000695",
+        "csv": "processed/aurland1g3_hydro_production.csv"
+      },
+      {
+        "slug": "aurland2g1_hydro",
+        "name": "AURLAND2G1      HYDRO",
+        "detail_id": "50WG00000000072G",
+        "csv": "processed/aurland2g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland2g2_hydro",
+        "name": "AURLAND2G2      HYDRO",
+        "detail_id": "50WG00000000071I",
+        "csv": "processed/aurland2g2_hydro_production.csv"
+      },
+      {
+        "slug": "aurland2g3_hydro",
+        "name": "AURLAND2G3      HYDRO",
+        "detail_id": "50WG00000000073E",
+        "csv": "processed/aurland2g3_hydro_production.csv"
+      },
+      {
+        "slug": "aurland3g1_hydro",
+        "name": "AURLAND3G1      HYDRO",
+        "detail_id": "50WG00000000075A",
+        "csv": "processed/aurland3g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland3g2_hydro",
+        "name": "AURLAND3G2      HYDRO",
+        "detail_id": "50WG00000000074C",
+        "csv": "processed/aurland3g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland_total",
+    "plant_name": "AURLAND TOTAL (Combined)",
+    "production_source": "unit-sum",
+    "production_csv": "processed/aurland_total_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland_total/aurland_total_jump_water_values.csv",
+    "levels_file": "output/aurland_total/aurland_total_jump_levels.csv",
+    "breakpoints_file": "output/aurland_total/aurland_total_jump_breakpoints.csv",
+    "valid_breakpoints": 2,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      200.0,
+      400.0,
+      650.0,
+      900.0,
+      1150.0
+    ],
+    "max_installed": 1273,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland1g1_hydro",
+        "name": "AURLAND1G1      HYDRO",
+        "detail_id": "50WG00000000066B",
+        "csv": "processed/aurland1g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland1g2_hydro",
+        "name": "AURLAND1G2      HYDRO",
+        "detail_id": "50WG00000000070K",
+        "csv": "processed/aurland1g2_hydro_production.csv"
+      },
+      {
+        "slug": "aurland1g3_hydro",
+        "name": "AURLAND1G3      HYDRO",
+        "detail_id": "50WG000000000695",
+        "csv": "processed/aurland1g3_hydro_production.csv"
+      },
+      {
+        "slug": "aurland2g1_hydro",
+        "name": "AURLAND2G1      HYDRO",
+        "detail_id": "50WG00000000072G",
+        "csv": "processed/aurland2g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland2g2_hydro",
+        "name": "AURLAND2G2      HYDRO",
+        "detail_id": "50WG00000000071I",
+        "csv": "processed/aurland2g2_hydro_production.csv"
+      },
+      {
+        "slug": "aurland2g3_hydro",
+        "name": "AURLAND2G3      HYDRO",
+        "detail_id": "50WG00000000073E",
+        "csv": "processed/aurland2g3_hydro_production.csv"
+      },
+      {
+        "slug": "aurland3g1_hydro",
+        "name": "AURLAND3G1      HYDRO",
+        "detail_id": "50WG00000000075A",
+        "csv": "processed/aurland3g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland3g2_hydro",
+        "name": "AURLAND3G2      HYDRO",
+        "detail_id": "50WG00000000074C",
+        "csv": "processed/aurland3g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland1_combined",
+    "plant_name": "AURLAND 1 (Combined)",
+    "production_source": "unit-sum",
+    "production_csv": "processed/aurland1_combined_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland1_combined/aurland1_combined_minimum_water_values.csv",
+    "levels_file": "output/aurland1_combined/aurland1_combined_minimum_levels.csv",
+    "breakpoints_file": "output/aurland1_combined/aurland1_combined_minimum_breakpoints.csv",
+    "valid_breakpoints": 1,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      180.0,
+      360.0,
+      540.0,
+      720.0
+    ],
+    "max_installed": 840,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland1g1_hydro",
+        "name": "AURLAND1G1      HYDRO",
+        "detail_id": "50WG00000000066B",
+        "csv": "processed/aurland1g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland1g2_hydro",
+        "name": "AURLAND1G2      HYDRO",
+        "detail_id": "50WG00000000070K",
+        "csv": "processed/aurland1g2_hydro_production.csv"
+      },
+      {
+        "slug": "aurland1g3_hydro",
+        "name": "AURLAND1G3      HYDRO",
+        "detail_id": "50WG000000000695",
+        "csv": "processed/aurland1g3_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland1_combined",
+    "plant_name": "AURLAND 1 (Combined)",
+    "production_source": "unit-sum",
+    "production_csv": "processed/aurland1_combined_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland1_combined/aurland1_combined_jump_water_values.csv",
+    "levels_file": "output/aurland1_combined/aurland1_combined_jump_levels.csv",
+    "breakpoints_file": "output/aurland1_combined/aurland1_combined_jump_breakpoints.csv",
+    "valid_breakpoints": 1,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      180.0,
+      360.0,
+      540.0,
+      720.0
+    ],
+    "max_installed": 840,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland1g1_hydro",
+        "name": "AURLAND1G1      HYDRO",
+        "detail_id": "50WG00000000066B",
+        "csv": "processed/aurland1g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland1g2_hydro",
+        "name": "AURLAND1G2      HYDRO",
+        "detail_id": "50WG00000000070K",
+        "csv": "processed/aurland1g2_hydro_production.csv"
+      },
+      {
+        "slug": "aurland1g3_hydro",
+        "name": "AURLAND1G3      HYDRO",
+        "detail_id": "50WG000000000695",
+        "csv": "processed/aurland1g3_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland2_combined",
+    "plant_name": "AURLAND 2 (Combined)",
+    "production_source": "unit-sum",
+    "production_csv": "processed/aurland2_combined_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland2_combined/aurland2_combined_minimum_water_values.csv",
+    "levels_file": "output/aurland2_combined/aurland2_combined_minimum_levels.csv",
+    "breakpoints_file": "output/aurland2_combined/aurland2_combined_minimum_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 24,
+    "prodlimits": [
+      0.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0
+    ],
+    "max_installed": 143,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 24,
+    "native_timestep_seconds": 3600,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland2g1_hydro",
+        "name": "AURLAND2G1      HYDRO",
+        "detail_id": "50WG00000000072G",
+        "csv": "processed/aurland2g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland2g2_hydro",
+        "name": "AURLAND2G2      HYDRO",
+        "detail_id": "50WG00000000071I",
+        "csv": "processed/aurland2g2_hydro_production.csv"
+      },
+      {
+        "slug": "aurland2g3_hydro",
+        "name": "AURLAND2G3      HYDRO",
+        "detail_id": "50WG00000000073E",
+        "csv": "processed/aurland2g3_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland2_combined",
+    "plant_name": "AURLAND 2 (Combined)",
+    "production_source": "unit-sum",
+    "production_csv": "processed/aurland2_combined_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland2_combined/aurland2_combined_jump_water_values.csv",
+    "levels_file": "output/aurland2_combined/aurland2_combined_jump_levels.csv",
+    "breakpoints_file": "output/aurland2_combined/aurland2_combined_jump_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 24,
+    "prodlimits": [
+      0.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0
+    ],
+    "max_installed": 143,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 24,
+    "native_timestep_seconds": 3600,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland2g1_hydro",
+        "name": "AURLAND2G1      HYDRO",
+        "detail_id": "50WG00000000072G",
+        "csv": "processed/aurland2g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland2g2_hydro",
+        "name": "AURLAND2G2      HYDRO",
+        "detail_id": "50WG00000000071I",
+        "csv": "processed/aurland2g2_hydro_production.csv"
+      },
+      {
+        "slug": "aurland2g3_hydro",
+        "name": "AURLAND2G3      HYDRO",
+        "detail_id": "50WG00000000073E",
+        "csv": "processed/aurland2g3_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland3_combined",
+    "plant_name": "AURLAND 3 (Combined)",
+    "production_source": "unit-sum",
+    "production_csv": "processed/aurland3_combined_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland3_combined/aurland3_combined_minimum_water_values.csv",
+    "levels_file": "output/aurland3_combined/aurland3_combined_minimum_levels.csv",
+    "breakpoints_file": "output/aurland3_combined/aurland3_combined_minimum_breakpoints.csv",
+    "valid_breakpoints": 2,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      70.0,
+      140.0,
+      210.0,
+      260.0
+    ],
+    "max_installed": 290,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland3g1_hydro",
+        "name": "AURLAND3G1      HYDRO",
+        "detail_id": "50WG00000000075A",
+        "csv": "processed/aurland3g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland3g2_hydro",
+        "name": "AURLAND3G2      HYDRO",
+        "detail_id": "50WG00000000074C",
+        "csv": "processed/aurland3g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland3_combined",
+    "plant_name": "AURLAND 3 (Combined)",
+    "production_source": "unit-sum",
+    "production_csv": "processed/aurland3_combined_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland3_combined/aurland3_combined_jump_water_values.csv",
+    "levels_file": "output/aurland3_combined/aurland3_combined_jump_levels.csv",
+    "breakpoints_file": "output/aurland3_combined/aurland3_combined_jump_breakpoints.csv",
+    "valid_breakpoints": 2,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      70.0,
+      140.0,
+      210.0,
+      260.0
+    ],
+    "max_installed": 290,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland3g1_hydro",
+        "name": "AURLAND3G1      HYDRO",
+        "detail_id": "50WG00000000075A",
+        "csv": "processed/aurland3g1_hydro_production.csv"
+      },
+      {
+        "slug": "aurland3g2_hydro",
+        "name": "AURLAND3G2      HYDRO",
+        "detail_id": "50WG00000000074C",
+        "csv": "processed/aurland3g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "sima_combined",
+    "plant_name": "Sima (Combined)",
+    "production_source": "unit-sum",
+    "production_csv": "processed/sima_combined_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/sima_combined/sima_combined_minimum_water_values.csv",
+    "levels_file": "output/sima_combined/sima_combined_minimum_levels.csv",
+    "breakpoints_file": "output/sima_combined/sima_combined_minimum_breakpoints.csv",
+    "valid_breakpoints": 4,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      120.0,
+      240.0,
+      360.0,
+      480.0,
+      620.0,
+      750.0,
+      920.0
+    ],
+    "max_installed": 920,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "sima_g1_hydro",
+        "name": "SIMA    G1      HYDRO",
+        "detail_id": "50WG00000001476O",
+        "csv": "processed/sima_g1_hydro_production.csv"
+      },
+      {
+        "slug": "sima_g2_hydro",
+        "name": "SIMA    G2      HYDRO",
+        "detail_id": "50WG00000001474S",
+        "csv": "processed/sima_g2_hydro_production.csv"
+      },
+      {
+        "slug": "sima_g3_hydro",
+        "name": "SIMA    G3      HYDRO",
+        "detail_id": "50WG00000001475Q",
+        "csv": "processed/sima_g3_hydro_production.csv"
+      },
+      {
+        "slug": "sima_g4_hydro",
+        "name": "SIMA    G4      HYDRO",
+        "detail_id": "50WG00000001477M",
+        "csv": "processed/sima_g4_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "sima_combined",
+    "plant_name": "Sima (Combined)",
+    "production_source": "unit-sum",
+    "production_csv": "processed/sima_combined_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/sima_combined/sima_combined_jump_water_values.csv",
+    "levels_file": "output/sima_combined/sima_combined_jump_levels.csv",
+    "breakpoints_file": "output/sima_combined/sima_combined_jump_breakpoints.csv",
+    "valid_breakpoints": 4,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      120.0,
+      240.0,
+      360.0,
+      480.0,
+      620.0,
+      750.0,
+      920.0
+    ],
+    "max_installed": 920,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "sima_g1_hydro",
+        "name": "SIMA    G1      HYDRO",
+        "detail_id": "50WG00000001476O",
+        "csv": "processed/sima_g1_hydro_production.csv"
+      },
+      {
+        "slug": "sima_g2_hydro",
+        "name": "SIMA    G2      HYDRO",
+        "detail_id": "50WG00000001474S",
+        "csv": "processed/sima_g2_hydro_production.csv"
+      },
+      {
+        "slug": "sima_g3_hydro",
+        "name": "SIMA    G3      HYDRO",
+        "detail_id": "50WG00000001475Q",
+        "csv": "processed/sima_g3_hydro_production.csv"
+      },
+      {
+        "slug": "sima_g4_hydro",
+        "name": "SIMA    G4      HYDRO",
+        "detail_id": "50WG00000001477M",
+        "csv": "processed/sima_g4_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland1g1_hydro",
+    "plant_name": "AURLAND1G1 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland1g1_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland1g1_hydro/aurland1g1_hydro_minimum_water_values.csv",
+    "levels_file": "output/aurland1g1_hydro/aurland1g1_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/aurland1g1_hydro/aurland1g1_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      69.0,
+      138.0,
+      207.0,
+      276.0
+    ],
+    "max_installed": 276.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland1g1_hydro",
+        "name": "AURLAND1G1      HYDRO",
+        "detail_id": "50WG00000000066B",
+        "csv": "processed/aurland1g1_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland1g1_hydro",
+    "plant_name": "AURLAND1G1 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland1g1_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland1g1_hydro/aurland1g1_hydro_jump_water_values.csv",
+    "levels_file": "output/aurland1g1_hydro/aurland1g1_hydro_jump_levels.csv",
+    "breakpoints_file": "output/aurland1g1_hydro/aurland1g1_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      69.0,
+      138.0,
+      207.0,
+      276.0
+    ],
+    "max_installed": 276.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland1g1_hydro",
+        "name": "AURLAND1G1      HYDRO",
+        "detail_id": "50WG00000000066B",
+        "csv": "processed/aurland1g1_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland1g2_hydro",
+    "plant_name": "AURLAND1G2 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland1g2_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland1g2_hydro/aurland1g2_hydro_minimum_water_values.csv",
+    "levels_file": "output/aurland1g2_hydro/aurland1g2_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/aurland1g2_hydro/aurland1g2_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 2,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      69.25,
+      138.5,
+      207.75,
+      277.0
+    ],
+    "max_installed": 277.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland1g2_hydro",
+        "name": "AURLAND1G2      HYDRO",
+        "detail_id": "50WG00000000070K",
+        "csv": "processed/aurland1g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland1g2_hydro",
+    "plant_name": "AURLAND1G2 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland1g2_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland1g2_hydro/aurland1g2_hydro_jump_water_values.csv",
+    "levels_file": "output/aurland1g2_hydro/aurland1g2_hydro_jump_levels.csv",
+    "breakpoints_file": "output/aurland1g2_hydro/aurland1g2_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 2,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      69.25,
+      138.5,
+      207.75,
+      277.0
+    ],
+    "max_installed": 277.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland1g2_hydro",
+        "name": "AURLAND1G2      HYDRO",
+        "detail_id": "50WG00000000070K",
+        "csv": "processed/aurland1g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland1g3_hydro",
+    "plant_name": "AURLAND1G3 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland1g3_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland1g3_hydro/aurland1g3_hydro_minimum_water_values.csv",
+    "levels_file": "output/aurland1g3_hydro/aurland1g3_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/aurland1g3_hydro/aurland1g3_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 1,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      70.0,
+      140.0,
+      210.0,
+      280.0
+    ],
+    "max_installed": 280.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland1g3_hydro",
+        "name": "AURLAND1G3      HYDRO",
+        "detail_id": "50WG000000000695",
+        "csv": "processed/aurland1g3_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland1g3_hydro",
+    "plant_name": "AURLAND1G3 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland1g3_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland1g3_hydro/aurland1g3_hydro_jump_water_values.csv",
+    "levels_file": "output/aurland1g3_hydro/aurland1g3_hydro_jump_levels.csv",
+    "breakpoints_file": "output/aurland1g3_hydro/aurland1g3_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 1,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      70.0,
+      140.0,
+      210.0,
+      280.0
+    ],
+    "max_installed": 280.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland1g3_hydro",
+        "name": "AURLAND1G3      HYDRO",
+        "detail_id": "50WG000000000695",
+        "csv": "processed/aurland1g3_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland2g1_hydro",
+    "plant_name": "AURLAND2G1 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland2g1_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland2g1_hydro/aurland2g1_hydro_minimum_water_values.csv",
+    "levels_file": "output/aurland2g1_hydro/aurland2g1_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/aurland2g1_hydro/aurland2g1_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 24,
+    "prodlimits": [
+      0.0,
+      39.781,
+      79.562,
+      119.344,
+      159.125
+    ],
+    "max_installed": 159.125,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 24,
+    "native_timestep_seconds": 3600,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland2g1_hydro",
+        "name": "AURLAND2G1      HYDRO",
+        "detail_id": "50WG00000000072G",
+        "csv": "processed/aurland2g1_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland2g1_hydro",
+    "plant_name": "AURLAND2G1 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland2g1_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland2g1_hydro/aurland2g1_hydro_jump_water_values.csv",
+    "levels_file": "output/aurland2g1_hydro/aurland2g1_hydro_jump_levels.csv",
+    "breakpoints_file": "output/aurland2g1_hydro/aurland2g1_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 24,
+    "prodlimits": [
+      0.0,
+      39.781,
+      79.562,
+      119.344,
+      159.125
+    ],
+    "max_installed": 159.125,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 24,
+    "native_timestep_seconds": 3600,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland2g1_hydro",
+        "name": "AURLAND2G1      HYDRO",
+        "detail_id": "50WG00000000072G",
+        "csv": "processed/aurland2g1_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland2g2_hydro",
+    "plant_name": "AURLAND2G2 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland2g2_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland2g2_hydro/aurland2g2_hydro_minimum_water_values.csv",
+    "levels_file": "output/aurland2g2_hydro/aurland2g2_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/aurland2g2_hydro/aurland2g2_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 24,
+    "prodlimits": [
+      0.0,
+      39.781,
+      79.562,
+      119.344,
+      159.125
+    ],
+    "max_installed": 159.125,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 24,
+    "native_timestep_seconds": 3600,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland2g2_hydro",
+        "name": "AURLAND2G2      HYDRO",
+        "detail_id": "50WG00000000071I",
+        "csv": "processed/aurland2g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland2g2_hydro",
+    "plant_name": "AURLAND2G2 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland2g2_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland2g2_hydro/aurland2g2_hydro_jump_water_values.csv",
+    "levels_file": "output/aurland2g2_hydro/aurland2g2_hydro_jump_levels.csv",
+    "breakpoints_file": "output/aurland2g2_hydro/aurland2g2_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 24,
+    "prodlimits": [
+      0.0,
+      39.781,
+      79.562,
+      119.344,
+      159.125
+    ],
+    "max_installed": 159.125,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 24,
+    "native_timestep_seconds": 3600,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland2g2_hydro",
+        "name": "AURLAND2G2      HYDRO",
+        "detail_id": "50WG00000000071I",
+        "csv": "processed/aurland2g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland2g3_hydro",
+    "plant_name": "AURLAND2G3 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland2g3_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland2g3_hydro/aurland2g3_hydro_minimum_water_values.csv",
+    "levels_file": "output/aurland2g3_hydro/aurland2g3_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/aurland2g3_hydro/aurland2g3_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 24,
+    "prodlimits": [
+      0.0,
+      39.781,
+      79.562,
+      119.344,
+      159.125
+    ],
+    "max_installed": 159.125,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 24,
+    "native_timestep_seconds": 3600,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland2g3_hydro",
+        "name": "AURLAND2G3      HYDRO",
+        "detail_id": "50WG00000000073E",
+        "csv": "processed/aurland2g3_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland2g3_hydro",
+    "plant_name": "AURLAND2G3 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland2g3_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland2g3_hydro/aurland2g3_hydro_jump_water_values.csv",
+    "levels_file": "output/aurland2g3_hydro/aurland2g3_hydro_jump_levels.csv",
+    "breakpoints_file": "output/aurland2g3_hydro/aurland2g3_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 24,
+    "prodlimits": [
+      0.0,
+      39.781,
+      79.562,
+      119.344,
+      159.125
+    ],
+    "max_installed": 159.125,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 24,
+    "native_timestep_seconds": 3600,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland2g3_hydro",
+        "name": "AURLAND2G3      HYDRO",
+        "detail_id": "50WG00000000073E",
+        "csv": "processed/aurland2g3_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland3g1_hydro",
+    "plant_name": "AURLAND3G1 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland3g1_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland3g1_hydro/aurland3g1_hydro_minimum_water_values.csv",
+    "levels_file": "output/aurland3g1_hydro/aurland3g1_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/aurland3g1_hydro/aurland3g1_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 2,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      34.0,
+      68.0,
+      102.0,
+      136.0
+    ],
+    "max_installed": 136.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland3g1_hydro",
+        "name": "AURLAND3G1      HYDRO",
+        "detail_id": "50WG00000000075A",
+        "csv": "processed/aurland3g1_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland3g1_hydro",
+    "plant_name": "AURLAND3G1 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland3g1_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland3g1_hydro/aurland3g1_hydro_jump_water_values.csv",
+    "levels_file": "output/aurland3g1_hydro/aurland3g1_hydro_jump_levels.csv",
+    "breakpoints_file": "output/aurland3g1_hydro/aurland3g1_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 2,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      34.0,
+      68.0,
+      102.0,
+      136.0
+    ],
+    "max_installed": 136.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland3g1_hydro",
+        "name": "AURLAND3G1      HYDRO",
+        "detail_id": "50WG00000000075A",
+        "csv": "processed/aurland3g1_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland3g2_hydro",
+    "plant_name": "AURLAND3G2 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland3g2_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/aurland3g2_hydro/aurland3g2_hydro_minimum_water_values.csv",
+    "levels_file": "output/aurland3g2_hydro/aurland3g2_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/aurland3g2_hydro/aurland3g2_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      34.25,
+      68.5,
+      102.75,
+      137.0
+    ],
+    "max_installed": 137.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland3g2_hydro",
+        "name": "AURLAND3G2      HYDRO",
+        "detail_id": "50WG00000000074C",
+        "csv": "processed/aurland3g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "aurland3g2_hydro",
+    "plant_name": "AURLAND3G2 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/aurland3g2_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/aurland3g2_hydro/aurland3g2_hydro_jump_water_values.csv",
+    "levels_file": "output/aurland3g2_hydro/aurland3g2_hydro_jump_levels.csv",
+    "breakpoints_file": "output/aurland3g2_hydro/aurland3g2_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      34.25,
+      68.5,
+      102.75,
+      137.0
+    ],
+    "max_installed": 137.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "aurland3g2_hydro",
+        "name": "AURLAND3G2      HYDRO",
+        "detail_id": "50WG00000000074C",
+        "csv": "processed/aurland3g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "sima_g1_hydro",
+    "plant_name": "SIMA G1 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/sima_g1_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/sima_g1_hydro/sima_g1_hydro_minimum_water_values.csv",
+    "levels_file": "output/sima_g1_hydro/sima_g1_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/sima_g1_hydro/sima_g1_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      57.5,
+      115.0,
+      172.5,
+      230.0
+    ],
+    "max_installed": 230.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "sima_g1_hydro",
+        "name": "SIMA    G1      HYDRO",
+        "detail_id": "50WG00000001476O",
+        "csv": "processed/sima_g1_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "sima_g1_hydro",
+    "plant_name": "SIMA G1 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/sima_g1_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/sima_g1_hydro/sima_g1_hydro_jump_water_values.csv",
+    "levels_file": "output/sima_g1_hydro/sima_g1_hydro_jump_levels.csv",
+    "breakpoints_file": "output/sima_g1_hydro/sima_g1_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      57.5,
+      115.0,
+      172.5,
+      230.0
+    ],
+    "max_installed": 230.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "sima_g1_hydro",
+        "name": "SIMA    G1      HYDRO",
+        "detail_id": "50WG00000001476O",
+        "csv": "processed/sima_g1_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "sima_g2_hydro",
+    "plant_name": "SIMA G2 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/sima_g2_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/sima_g2_hydro/sima_g2_hydro_minimum_water_values.csv",
+    "levels_file": "output/sima_g2_hydro/sima_g2_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/sima_g2_hydro/sima_g2_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 2,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      57.5,
+      115.0,
+      172.5,
+      230.0
+    ],
+    "max_installed": 230.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "sima_g2_hydro",
+        "name": "SIMA    G2      HYDRO",
+        "detail_id": "50WG00000001474S",
+        "csv": "processed/sima_g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "sima_g2_hydro",
+    "plant_name": "SIMA G2 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/sima_g2_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/sima_g2_hydro/sima_g2_hydro_jump_water_values.csv",
+    "levels_file": "output/sima_g2_hydro/sima_g2_hydro_jump_levels.csv",
+    "breakpoints_file": "output/sima_g2_hydro/sima_g2_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 2,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      57.5,
+      115.0,
+      172.5,
+      230.0
+    ],
+    "max_installed": 230.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "sima_g2_hydro",
+        "name": "SIMA    G2      HYDRO",
+        "detail_id": "50WG00000001474S",
+        "csv": "processed/sima_g2_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "sima_g3_hydro",
+    "plant_name": "SIMA G3 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/sima_g3_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/sima_g3_hydro/sima_g3_hydro_minimum_water_values.csv",
+    "levels_file": "output/sima_g3_hydro/sima_g3_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/sima_g3_hydro/sima_g3_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 5,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      57.5,
+      115.0,
+      172.5,
+      230.0
+    ],
+    "max_installed": 230.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "sima_g3_hydro",
+        "name": "SIMA    G3      HYDRO",
+        "detail_id": "50WG00000001475Q",
+        "csv": "processed/sima_g3_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "sima_g3_hydro",
+    "plant_name": "SIMA G3 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/sima_g3_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/sima_g3_hydro/sima_g3_hydro_jump_water_values.csv",
+    "levels_file": "output/sima_g3_hydro/sima_g3_hydro_jump_levels.csv",
+    "breakpoints_file": "output/sima_g3_hydro/sima_g3_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 5,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      57.5,
+      115.0,
+      172.5,
+      230.0
+    ],
+    "max_installed": 230.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "sima_g3_hydro",
+        "name": "SIMA    G3      HYDRO",
+        "detail_id": "50WG00000001475Q",
+        "csv": "processed/sima_g3_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "sima_g4_hydro",
+    "plant_name": "SIMA G4 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/sima_g4_hydro_production.csv",
+    "method": "minimum",
+    "status": "ok",
+    "water_values_file": "output/sima_g4_hydro/sima_g4_hydro_minimum_water_values.csv",
+    "levels_file": "output/sima_g4_hydro/sima_g4_hydro_minimum_levels.csv",
+    "breakpoints_file": "output/sima_g4_hydro/sima_g4_hydro_minimum_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      57.5,
+      115.0,
+      172.5,
+      230.0
+    ],
+    "max_installed": 230.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "sima_g4_hydro",
+        "name": "SIMA    G4      HYDRO",
+        "detail_id": "50WG00000001477M",
+        "csv": "processed/sima_g4_hydro_production.csv"
+      }
+    ]
+  },
+  {
+    "plant_id": "sima_g4_hydro",
+    "plant_name": "SIMA G4 HYDRO",
+    "production_source": "web",
+    "production_csv": "processed/sima_g4_hydro_production.csv",
+    "method": "jump",
+    "status": "ok",
+    "water_values_file": "output/sima_g4_hydro/sima_g4_hydro_jump_water_values.csv",
+    "levels_file": "output/sima_g4_hydro/sima_g4_hydro_jump_levels.csv",
+    "breakpoints_file": "output/sima_g4_hydro/sima_g4_hydro_jump_breakpoints.csv",
+    "valid_breakpoints": 0,
+    "observations": 96,
+    "prodlimits": [
+      0.0,
+      57.5,
+      115.0,
+      172.5,
+      230.0
+    ],
+    "max_installed": 230.0,
+    "area": "NO5",
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-10-02T00:00:00",
+    "strictness": 0.5,
+    "jumpm": 60,
+    "max_samples_threshold": 20000,
+    "resample_rule": null,
+    "raw_observations": 96,
+    "native_timestep_seconds": 900,
+    "price_intraday_file": "processed/price_NO5_intraday.csv",
+    "price_quarter_hour_file": null,
+    "unit_csvs": [
+      {
+        "slug": "sima_g4_hydro",
+        "name": "SIMA    G4      HYDRO",
+        "detail_id": "50WG00000001477M",
+        "csv": "processed/sima_g4_hydro_production.csv"
+      }
+    ]
+  }
+]

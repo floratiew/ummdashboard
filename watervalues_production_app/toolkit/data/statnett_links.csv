@@ -1,0 +1,9 @@
+title,slug,download_template,first_year,latest_year
+Production & Consumption,productionconsumption,https://driftsdata.statnett.no/restapi/Download/productionconsumption/{year},2006,2025
+Import and export (Physical flow),physicalflow,https://driftsdata.statnett.no/restapi/Download/physicalflow/{year},2006,2025
+Primary reserves D-2-market,primaryreservesday,https://driftsdata.statnett.no/restapi/Download/primaryreservesday/{year},2006,2025
+Primary reserves D-2-market,primaryreservesdaytwo,https://driftsdata.statnett.no/restapi/Download/primaryreservesdaytwo/{year},2006,2025
+Primary reserves week,primaryreservesweek,https://driftsdata.statnett.no/restapi/Download/primaryreservesweek/{year},2006,2025
+Secondary reserves,secondaryreserves,https://driftsdata.statnett.no/restapi/Download/secondaryreserves/{year},2006,2025
+Rkom,rkomdata,https://driftsdata.statnett.no/restapi/Download/rkomdata/{year},2006,2025
+Rkom,rkom,https://driftsdata.statnett.no/restapi/Download/rkom/{year},2006,2025
