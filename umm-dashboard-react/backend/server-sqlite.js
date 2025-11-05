@@ -24,9 +24,9 @@ let db;
 try {
   db = new Database(DB_PATH);
   db.pragma('journal_mode = WAL'); // Enable Write-Ahead Logging for better concurrency
-  console.log(`✅ Connected to database: ${DB_PATH}`);
+  console.log(`Connected to database: ${DB_PATH}`);
 } catch (error) {
-  console.error(`❌ Failed to connect to database: ${error.message}`);
+  console.error(`Failed to connect to database: ${error.message}`);
   process.exit(1);
 }
 
