@@ -436,18 +436,16 @@ function OutagesView() {
             const allAreasAggregates = {};
             summaryData.summary.forEach(row => {
               if (!allAreasAggregates[row.area]) {
-                allAreasAggregates[row.area] = { planned: 0, unplanned: 0, unknown: 0, total: 0 };
+                allAreasAggregates[row.area] = { planned: 0, unplanned: 0, total: 0 };
               }
               if (row.plannedStatus === 'Planned') allAreasAggregates[row.area].planned += row.count;
               else if (row.plannedStatus === 'Unplanned') allAreasAggregates[row.area].unplanned += row.count;
-              else allAreasAggregates[row.area].unknown += row.count;
               allAreasAggregates[row.area].total += row.count;
             });
             
             const allTotalPlanned = Object.values(allAreasAggregates).reduce((sum, a) => sum + a.planned, 0);
             const allTotalUnplanned = Object.values(allAreasAggregates).reduce((sum, a) => sum + a.unplanned, 0);
-            const allTotalUnknown = Object.values(allAreasAggregates).reduce((sum, a) => sum + a.unknown, 0);
-            const allGrandTotal = allTotalPlanned + allTotalUnplanned + allTotalUnknown;
+            const grandTotal = allTotalPlanned + allTotalUnplanned;
             const totalAreas = Object.keys(allAreasAggregates).length;
 
             return (
@@ -490,7 +488,7 @@ function OutagesView() {
                             {allTotalPlanned.toLocaleString()}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {((allTotalPlanned / allGrandTotal) * 100).toFixed(1)}% of all outages
+                            {((allTotalPlanned / grandTotal) * 100).toFixed(1)}% of all outages
                           </Typography>
                         </CardContent>
                       </Card>
@@ -509,26 +507,7 @@ function OutagesView() {
                             {allTotalUnplanned.toLocaleString()}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            {((allTotalUnplanned / allGrandTotal) * 100).toFixed(1)}% of all outages
-                          </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                      <Card sx={{ 
-                        background: 'linear-gradient(135deg, rgba(158, 158, 158, 0.25) 0%, rgba(158, 158, 158, 0.08) 100%)',
-                        border: '2px solid rgba(158, 158, 158, 0.4)'
-                      }}>
-                        <CardContent>
-                          <Typography color="text.secondary" gutterBottom variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#9e9e9e' }} />
-                            Unknown Status
-                          </Typography>
-                          <Typography variant="h3" sx={{ fontWeight: 700, color: '#9e9e9e', mb: 1 }}>
-                            {allTotalUnknown.toLocaleString()}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {((allTotalUnknown / allGrandTotal) * 100).toFixed(1)}% of all outages
+                            {((allTotalUnplanned / grandTotal) * 100).toFixed(1)}% of all outages
                           </Typography>
                         </CardContent>
                       </Card>
@@ -544,7 +523,7 @@ function OutagesView() {
                             Total Outages
                           </Typography>
                           <Typography variant="h3" sx={{ fontWeight: 700, color: '#667eea', mb: 1 }}>
-                            {allGrandTotal.toLocaleString()}
+                            {grandTotal.toLocaleString()}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             Across all {totalAreas} areas
@@ -604,16 +583,6 @@ function OutagesView() {
                               backgroundColor: '#1a1232'
                             }}>
                               UNPLANNED
-                            </th>
-                            <th style={{ 
-                              padding: '12px 16px', 
-                              textAlign: 'right',
-                              fontWeight: 600,
-                              fontSize: '12px',
-                              color: '#9e9e9e',
-                              backgroundColor: '#1a1232'
-                            }}>
-                              UNKNOWN
                             </th>
                             <th style={{ 
                               padding: '12px 16px', 
@@ -694,15 +663,6 @@ function OutagesView() {
                                 <td style={{ 
                                   padding: '10px 16px', 
                                   textAlign: 'right',
-                                  fontSize: '13px',
-                                  color: '#9e9e9e',
-                                  fontWeight: 500
-                                }}>
-                                  {data.unknown.toLocaleString()}
-                                </td>
-                                <td style={{ 
-                                  padding: '10px 16px', 
-                                  textAlign: 'right',
                                   fontWeight: 700,
                                   fontSize: '14px',
                                   color: idx < topN ? '#ff9800' : '#667eea'
@@ -736,22 +696,20 @@ function OutagesView() {
               .filter(row => summaryData.topAreas.includes(row.area))
               .forEach(row => {
                 if (!areaAggregates[row.area]) {
-                  areaAggregates[row.area] = { planned: 0, unplanned: 0, unknown: 0, total: 0 };
+                  areaAggregates[row.area] = { planned: 0, unplanned: 0, total: 0 };
                 }
                 if (row.plannedStatus === 'Planned') areaAggregates[row.area].planned += row.count;
                 else if (row.plannedStatus === 'Unplanned') areaAggregates[row.area].unplanned += row.count;
-                else areaAggregates[row.area].unknown += row.count;
                 areaAggregates[row.area].total += row.count;
               });
             
             const totalPlanned = Object.values(areaAggregates).reduce((sum, a) => sum + a.planned, 0);
             const totalUnplanned = Object.values(areaAggregates).reduce((sum, a) => sum + a.unplanned, 0);
-            const totalUnknown = Object.values(areaAggregates).reduce((sum, a) => sum + a.unknown, 0);
-            const grandTotal = totalPlanned + totalUnplanned + totalUnknown;
+            const grandTotal = totalPlanned + totalUnplanned;
 
             return (
               <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Card sx={{ 
                     background: 'linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(76, 175, 80, 0.05) 100%)',
                     border: '1px solid rgba(76, 175, 80, 0.3)'
@@ -770,7 +728,7 @@ function OutagesView() {
                     </CardContent>
                   </Card>
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Card sx={{ 
                     background: 'linear-gradient(135deg, rgba(244, 67, 54, 0.2) 0%, rgba(244, 67, 54, 0.05) 100%)',
                     border: '1px solid rgba(244, 67, 54, 0.3)'
@@ -789,26 +747,7 @@ function OutagesView() {
                     </CardContent>
                   </Card>
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Card sx={{ 
-                    background: 'linear-gradient(135deg, rgba(158, 158, 158, 0.2) 0%, rgba(158, 158, 158, 0.05) 100%)',
-                    border: '1px solid rgba(158, 158, 158, 0.3)'
-                  }}>
-                    <CardContent>
-                      <Typography color="text.secondary" gutterBottom variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#9e9e9e' }} />
-                        Unknown Status
-                      </Typography>
-                      <Typography variant="h3" sx={{ fontWeight: 700, color: '#9e9e9e', mb: 1 }}>
-                        {totalUnknown.toLocaleString()}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {((totalUnknown / grandTotal) * 100).toFixed(1)}% of total
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Card sx={{ 
                     background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(102, 126, 234, 0.05) 100%)',
                     border: '1px solid rgba(102, 126, 234, 0.3)'
@@ -839,11 +778,10 @@ function OutagesView() {
               .filter(row => summaryData.topAreas.includes(row.area))
               .forEach(row => {
                 if (!areaAggregates[row.area]) {
-                  areaAggregates[row.area] = { planned: 0, unplanned: 0, unknown: 0, total: 0 };
+                  areaAggregates[row.area] = { planned: 0, unplanned: 0, total: 0 };
                 }
                 if (row.plannedStatus === 'Planned') areaAggregates[row.area].planned += row.count;
                 else if (row.plannedStatus === 'Unplanned') areaAggregates[row.area].unplanned += row.count;
-                else areaAggregates[row.area].unknown += row.count;
                 areaAggregates[row.area].total += row.count;
               });
             
@@ -890,14 +828,6 @@ function OutagesView() {
                           data: sortedAreas.map(([, data]) => data.unplanned),
                           backgroundColor: 'rgba(244, 67, 54, 0.8)',
                           borderColor: 'rgba(244, 67, 54, 1)',
-                          borderWidth: 2,
-                          borderRadius: 4,
-                        },
-                        {
-                          label: 'Unknown',
-                          data: sortedAreas.map(([, data]) => data.unknown),
-                          backgroundColor: 'rgba(158, 158, 158, 0.8)',
-                          borderColor: 'rgba(158, 158, 158, 1)',
                           borderWidth: 2,
                           borderRadius: 4,
                         }
@@ -965,11 +895,10 @@ function OutagesView() {
                 .filter(row => summaryData.topAreas.includes(row.area))
                 .forEach(row => {
                   if (!areaAggregates[row.area]) {
-                    areaAggregates[row.area] = { planned: 0, unplanned: 0, unknown: 0, total: 0 };
+                    areaAggregates[row.area] = { planned: 0, unplanned: 0, total: 0 };
                   }
                   if (row.plannedStatus === 'Planned') areaAggregates[row.area].planned += row.count;
                   else if (row.plannedStatus === 'Unplanned') areaAggregates[row.area].unplanned += row.count;
-                  else areaAggregates[row.area].unknown += row.count;
                   areaAggregates[row.area].total += row.count;
                 });
 
@@ -1013,15 +942,6 @@ function OutagesView() {
                           color: '#f44336'
                         }}>
                           UNPLANNED
-                        </th>
-                        <th style={{ 
-                          padding: '14px 16px', 
-                          textAlign: 'right',
-                          fontWeight: 600,
-                          fontSize: '13px',
-                          color: '#9e9e9e'
-                        }}>
-                          UNKNOWN
                         </th>
                         <th style={{ 
                           padding: '14px 16px', 
@@ -1080,16 +1000,7 @@ function OutagesView() {
                           </td>
                           <td style={{ 
                             padding: '14px 16px', 
-                            textAlign: 'right',
-                            fontSize: '14px',
-                            color: '#9e9e9e',
-                            fontWeight: 500
-                          }}>
-                            {data.unknown.toLocaleString()}
-                          </td>
-                          <td style={{ 
-                            padding: '14px 16px', 
-                            textAlign: 'right',
+                            textAlign: 'right', 
                             fontWeight: 700,
                             fontSize: '15px',
                             color: '#667eea',

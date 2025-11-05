@@ -40,6 +40,7 @@ FIELDNAMES = [
     "transmission_units_json",
     "other_market_units_json",
     "acer_rss_message_ids_json",
+    "related_messages_json",
     "planned_status",
     "retrieved_at",
 ]
@@ -154,7 +155,38 @@ def serialize(value: Any) -> str:
     return str(value)
 
 
-def normalize_message(message: Dict[str, Any], retrieved_at: str) -> Dict[str, str]:
+def extract_event_times(message: Dict[str, Any]) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Extract event start and stop times from the message.
+    First tries top-level eventStart/eventStop, then looks in nested units' timePeriods.
+    """
+    # Try top-level fields first
+    event_start = message.get("eventStart")
+    event_stop = message.get("eventStop")
+    
+    if event_start and event_stop:
+        return event_start, event_stop
+    
+    # If not found, try to extract from production/generation units' timePeriods
+    for unit_key in ["productionUnits", "generationUnits", "consumptionUnits", "transmissionUnits"]:
+        units = message.get(unit_key, [])
+        if isinstance(units, list) and len(units) > 0:
+            for unit in units:
+                time_periods = unit.get("timePeriods", [])
+                if isinstance(time_periods, list) and len(time_periods) > 0:
+                    first_period = time_periods[0]
+                    event_start = first_period.get("eventStart")
+                    event_stop = first_period.get("eventStop")
+                    if event_start and event_stop:
+                        return event_start, event_stop
+    
+    return None, None
+
+
+def normalize_message(message: Dict[str, Any], retrieved_at: str, related_messages: List[Dict[str, Any]] = None) -> Dict[str, str]:
+    # Extract event times from top-level or nested structure
+    event_start, event_stop = extract_event_times(message)
+    
     return {
         "message_id": serialize(message.get("messageId")),
         "version": serialize(message.get("version")),
@@ -162,8 +194,8 @@ def normalize_message(message: Dict[str, Any], retrieved_at: str) -> Dict[str, s
         "event_status": serialize(message.get("eventStatus")),
         "is_outdated": serialize(message.get("isOutdated")),
         "publication_date": serialize(message.get("publicationDate")),
-        "event_start": serialize(message.get("eventStart")),
-        "event_stop": serialize(message.get("eventStop")),
+        "event_start": serialize(event_start),
+        "event_stop": serialize(event_stop),
         "publisher_id": serialize(message.get("publisherId")),
         "publisher_name": serialize(message.get("publisherName")),
         "unavailability_type": serialize(message.get("unavailabilityType")),
@@ -180,6 +212,7 @@ def normalize_message(message: Dict[str, Any], retrieved_at: str) -> Dict[str, s
         "transmission_units_json": serialize(message.get("transmissionUnits")),
         "other_market_units_json": serialize(message.get("otherMarketUnits")),
         "acer_rss_message_ids_json": serialize(message.get("acerRssMessageIds")),
+        "related_messages_json": serialize(related_messages) if related_messages else "",
         "planned_status": serialize(message.get("plannedStatus")),
         "retrieved_at": retrieved_at,
     }
@@ -201,11 +234,31 @@ def fetch_batch(
     return items, int(total)
 
 
-def fetch_message_detail(message_id: str, session: requests.Session) -> Dict[str, Any]:
+def fetch_message_detail(message_id: str, session: requests.Session) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    """
+    Fetch message details. Returns a tuple of (main_message, related_messages).
+    The API returns a list where the first item is the current version and 
+    subsequent items are related/previous versions.
+    """
     url = f"https://ummapi.nordpoolgroup.com/messages/{message_id}"
     response = session.get(url, timeout=30)
     response.raise_for_status()
-    return response.json() if response.content else {}
+    
+    if not response.content:
+        return {}, []
+    
+    data = response.json()
+    
+    # If it's a list (as the API returns), extract main message and related messages
+    if isinstance(data, list):
+        if len(data) == 0:
+            return {}, []
+        main_message = data[0]  # First item is the current version
+        related_messages = data[1:] if len(data) > 1 else []  # Rest are related/previous versions
+        return main_message, related_messages
+    else:
+        # Fallback if API returns a single object
+        return data, []
 
 
 def ensure_parent_dir(path: Path) -> None:
@@ -242,13 +295,22 @@ def download_messages(cfg: FetchConfig) -> List[Dict[str, str]]:
                 if not should_keep(message.get("publicationDate"), cfg):
                     continue
                 message_id = str(message.get("messageId"))
-                detail = fetch_message_detail(message_id, session) if message_id else {}
+                
+                # Fetch detail which returns (main_message, related_messages)
+                if message_id:
+                    detail, related_messages = fetch_message_detail(message_id, session)
+                else:
+                    detail, related_messages = {}, []
+                
                 # Only merge if detail is a dict
                 if isinstance(detail, dict):
                     merged = {**message, **detail}
                 else:
                     merged = message  # fallback: ignore detail if not a dict
-                collected.append(normalize_message(merged, retrieved_at))
+                    related_messages = []
+                
+                # Normalize with related messages info
+                collected.append(normalize_message(merged, retrieved_at, related_messages))
                 kept += 1
                 if cfg.max_records and len(collected) >= cfg.max_records:
                     print("Reached max-records limit. Stopping early.")

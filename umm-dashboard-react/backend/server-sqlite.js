@@ -75,7 +75,7 @@ app.get('/api/messages', async (req, res) => {
       area,
       publisher,
       search,
-      limit = 1000,
+      limit = 10000, // Reasonable limit for pagination (10k messages per page)
       offset = 0
     } = req.query;
     
@@ -139,7 +139,7 @@ app.get('/api/stats', async (req, res) => {
     const publishers = db.prepare('SELECT COUNT(DISTINCT publisher_name) as count FROM messages WHERE publisher_name IS NOT NULL').get().count;
     
     // Count distinct areas (need to split comma-separated values)
-    const areaRows = db.prepare('SELECT DISTINCT area_names FROM messages WHERE area_names IS NOT NULL AND area_names != ""').all();
+    const areaRows = db.prepare("SELECT DISTINCT area_names FROM messages WHERE area_names IS NOT NULL AND area_names != ''").all();
     const uniqueAreas = new Set();
     areaRows.forEach(row => {
       if (row.area_names) {
@@ -148,7 +148,7 @@ app.get('/api/stats', async (req, res) => {
     });
     
     // Count distinct production units
-    const unitRows = db.prepare('SELECT DISTINCT production_unit_names FROM messages WHERE production_unit_names IS NOT NULL AND production_unit_names != ""').all();
+    const unitRows = db.prepare("SELECT DISTINCT production_unit_names FROM messages WHERE production_unit_names IS NOT NULL AND production_unit_names != ''").all();
     const uniqueUnits = new Set();
     unitRows.forEach(row => {
       if (row.production_unit_names) {
@@ -188,7 +188,7 @@ app.get('/api/filters', async (req, res) => {
       .map(row => row.message_type);
     
     // Get unique areas
-    const areaRows = db.prepare('SELECT DISTINCT area_names FROM messages WHERE area_names IS NOT NULL AND area_names != ""').all();
+    const areaRows = db.prepare("SELECT DISTINCT area_names FROM messages WHERE area_names IS NOT NULL AND area_names != ''").all();
     const areasSet = new Set();
     areaRows.forEach(row => {
       if (row.area_names) {
@@ -400,7 +400,7 @@ app.get('/api/charts/yearly', async (req, res) => {
   try {
     const { area, messageType } = req.query;
     
-    let query = 'SELECT strftime("%Y", publication_date) as year, COUNT(*) as count FROM messages WHERE 1=1';
+    let query = "SELECT strftime('%Y', publication_date) as year, COUNT(*) as count FROM messages WHERE 1=1";
     const params = [];
     
     if (area) {
@@ -427,6 +427,96 @@ app.get('/api/charts/yearly', async (req, res) => {
   }
 });
 
+// Area outage events endpoint
+app.get('/api/outages/area-events', async (req, res) => {
+  try {
+    const { mwThreshold = 400, status = 'Both', areas } = req.query;
+    
+    // Query messages with outage types and capacity info
+    let query = `
+      SELECT 
+        area_names,
+        unavailable_mw,
+        unavailability_type,
+        publication_date,
+        remarks,
+        message_type
+      FROM messages 
+      WHERE message_type IN (1, 2, 3)
+        AND unavailable_mw >= ?
+    `;
+    const params = [parseFloat(mwThreshold)];
+    
+    // Filter by status (planned/unplanned) if specified
+    if (status !== 'Both') {
+      if (status === 'Planned') {
+        query += ' AND unavailability_type = ?';
+        params.push('1');
+      } else if (status === 'Unplanned') {
+        query += ' AND unavailability_type = ?';
+        params.push('2');
+      }
+    }
+    
+    // Filter by areas if specified
+    if (areas) {
+      const areaList = areas.split(',');
+      const areaConditions = areaList.map(() => 'area_names LIKE ?').join(' OR ');
+      query += ` AND (${areaConditions})`;
+      areaList.forEach(area => params.push(`%${area}%`));
+    }
+    
+    query += ' ORDER BY publication_date DESC';
+    
+    const rows = db.prepare(query).all(...params);
+    
+    // Process results - split area_names and create individual events
+    const events = [];
+    rows.forEach(row => {
+      const areaList = row.area_names ? row.area_names.split(',') : [];
+      areaList.forEach(area => {
+        // Determine status
+        let eventStatus = 'Unknown';
+        if (row.unavailability_type === '1') eventStatus = 'Planned';
+        else if (row.unavailability_type === '2') eventStatus = 'Unplanned';
+        
+        events.push({
+          area: area.trim(),
+          mw: row.unavailable_mw || 0,
+          status: eventStatus,
+          publicationDate: row.publication_date,
+          remarks: row.remarks
+        });
+      });
+    });
+    
+    // Calculate summary by area
+    const areaStats = {};
+    events.forEach(event => {
+      if (!areaStats[event.area]) {
+        areaStats[event.area] = { area: event.area, totalMW: 0, count: 0 };
+      }
+      areaStats[event.area].totalMW += event.mw;
+      areaStats[event.area].count += 1;
+    });
+    
+    const summary = Object.values(areaStats).sort((a, b) => b.totalMW - a.totalMW);
+    
+    // Get unique areas for filter
+    const uniqueAreas = [...new Set(events.map(e => e.area))].sort();
+    
+    res.json({
+      events,
+      summary,
+      uniqueAreas,
+      totalEvents: events.length
+    });
+  } catch (error) {
+    console.error('Error loading area outage events:', error);
+    res.status(500).json({ error: 'Failed to load area outage events' });
+  }
+});
+
 // Outage summary
 app.get('/api/outages/summary', async (req, res) => {
   try {
@@ -436,7 +526,7 @@ app.get('/api/outages/summary', async (req, res) => {
     const params = [];
     
     if (year && year !== 'all') {
-      query += ' AND strftime("%Y", publication_date) = ?';
+      query += " AND strftime('%Y', publication_date) = ?";
       params.push(year);
     }
     if (messageType) {

@@ -14,8 +14,20 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { DataGrid } from '@mui/x-data-grid';
 import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
@@ -29,6 +41,9 @@ function ProductionUnitsView() {
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedMessageType, setSelectedMessageType] = useState('');
   const [selectedPlannedStatus, setSelectedPlannedStatus] = useState('');
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [messageDetails, setMessageDetails] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
     fetchUnits();
@@ -82,6 +97,29 @@ function ProductionUnitsView() {
     }
   };
 
+  const fetchMessageDetails = async (messageId) => {
+    try {
+      setLoadingDetails(true);
+      const res = await axios.get(`/api/messages/${messageId}`);
+      setMessageDetails(res.data);
+    } catch (err) {
+      console.error('Error fetching message details:', err);
+      setError('Failed to load message details');
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
+  const handleRowClick = (params) => {
+    setSelectedMessage(params.row);
+    fetchMessageDetails(params.row.message_id);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedMessage(null);
+    setMessageDetails(null);
+  };
+
   const messageTypeOptions = {
     '1': 'Production unavailability',
     '2': 'Consumption unavailability',
@@ -101,6 +139,7 @@ function ProductionUnitsView() {
       field: 'message_type',
       headerName: 'Type',
       width: 180,
+      valueFormatter: (params) => messageTypeOptions[params.value] || params.value,
     },
     {
       field: 'area_names',
@@ -132,6 +171,8 @@ function ProductionUnitsView() {
       flex: 1,
     },
   ];
+
+  const getRowId = (row) => row.message_id || row.id;
 
   return (
     <Box>
@@ -581,13 +622,17 @@ function ProductionUnitsView() {
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
               Market Messages for {unitData.unitName}
             </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              💡 Click on any row to view full details and related messages
+            </Typography>
             <Box sx={{ height: 600, width: '100%' }}>
               <DataGrid
-                rows={unitData.events?.map((row, idx) => ({ id: idx, ...row })) || []}
+                rows={unitData.events || []}
                 columns={columns}
+                getRowId={getRowId}
                 pageSize={10}
                 rowsPerPageOptions={[10, 25, 50]}
-                disableSelectionOnClick
+                onRowClick={handleRowClick}
                 sx={{
                   '& .MuiDataGrid-cell': {
                     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -595,6 +640,12 @@ function ProductionUnitsView() {
                   '& .MuiDataGrid-columnHeaders': {
                     backgroundColor: 'rgba(102, 126, 234, 0.1)',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                  '& .MuiDataGrid-row': {
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: 'rgba(102, 126, 234, 0.15)',
+                    },
                   },
                 }}
               />
@@ -610,6 +661,170 @@ function ProductionUnitsView() {
           </Typography>
         </Paper>
       )}
+
+      {/* Message Details Modal */}
+      <Dialog 
+        open={!!selectedMessage} 
+        onClose={handleCloseModal}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h6">Message Details</Typography>
+          <IconButton onClick={handleCloseModal} size="small">
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          {loadingDetails ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : messageDetails ? (
+            <Box>
+              {/* Main Message Details */}
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                Main Message
+              </Typography>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="text.secondary">Message ID</Typography>
+                  <Typography variant="body1" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
+                    {messageDetails.message.message_id}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="text.secondary">Publisher</Typography>
+                  <Typography variant="body1">{messageDetails.message.publisher_name}</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="text.secondary">Message Type</Typography>
+                  <Typography variant="body1">{messageDetails.message.message_type}</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="text.secondary">Event Status</Typography>
+                  <Typography variant="body1">{messageDetails.message.event_status}</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="text.secondary">Publication Date</Typography>
+                  <Typography variant="body1">
+                    {new Date(messageDetails.message.publication_date).toLocaleString()}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="text.secondary">Event Period</Typography>
+                  <Typography variant="body1">
+                    {messageDetails.message.event_start ? new Date(messageDetails.message.event_start).toLocaleString() : 'N/A'}
+                    {' → '}
+                    {messageDetails.message.event_stop ? new Date(messageDetails.message.event_stop).toLocaleString() : 'N/A'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="body2" color="text.secondary">Areas</Typography>
+                  <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mt: 0.5 }}>
+                    {messageDetails.message.area_names?.map((area) => (
+                      <Chip key={area} label={area} size="small" />
+                    ))}
+                  </Box>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="body2" color="text.secondary">Production/Generation Units</Typography>
+                  <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mt: 0.5 }}>
+                    {[...new Set([
+                      ...(messageDetails.message.production_unit_names || []),
+                      ...(messageDetails.message.generation_unit_names || [])
+                    ])].map((unit) => (
+                      <Chip key={unit} label={unit} size="small" color="primary" />
+                    ))}
+                  </Box>
+                </Grid>
+                {messageDetails.message.remarks && (
+                  <Grid item xs={12}>
+                    <Typography variant="body2" color="text.secondary">Remarks</Typography>
+                    <Paper sx={{ p: 2, mt: 0.5, backgroundColor: 'rgba(102, 126, 234, 0.05)' }}>
+                      <Typography variant="body2">{messageDetails.message.remarks}</Typography>
+                    </Paper>
+                  </Grid>
+                )}
+              </Grid>
+
+              <Divider sx={{ my: 3 }} />
+
+              {/* Related Messages */}
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                Related Messages ({messageDetails.relatedCount})
+              </Typography>
+              {messageDetails.relatedCount === 0 ? (
+                <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', py: 2 }}>
+                  No related messages found
+                </Typography>
+              ) : (
+                <List sx={{ width: '100%' }}>
+                  {messageDetails.relatedMessages.map((relatedMsg, index) => (
+                    <React.Fragment key={relatedMsg.message_id}>
+                      <ListItem 
+                        alignItems="flex-start" 
+                        sx={{ 
+                          flexDirection: 'column',
+                          backgroundColor: 'rgba(102, 126, 234, 0.03)',
+                          borderRadius: 1,
+                          mb: 1
+                        }}
+                      >
+                        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            Related Message #{index + 1}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+                            {relatedMsg.message_id}
+                          </Typography>
+                        </Box>
+                        <Grid container spacing={1}>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">Publisher</Typography>
+                            <Typography variant="body2">{relatedMsg.publisher_name}</Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">Type</Typography>
+                            <Typography variant="body2">{relatedMsg.message_type}</Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">Publication Date</Typography>
+                            <Typography variant="body2">
+                              {new Date(relatedMsg.publication_date).toLocaleString()}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">Areas</Typography>
+                            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                              {relatedMsg.area_names?.map((area) => (
+                                <Chip key={area} label={area} size="small" />
+                              ))}
+                            </Box>
+                          </Grid>
+                          {relatedMsg.remarks && (
+                            <Grid item xs={12}>
+                              <Typography variant="caption" color="text.secondary">Remarks</Typography>
+                              <Paper sx={{ p: 1, mt: 0.5, backgroundColor: 'rgba(255, 255, 255, 0.05)' }}>
+                                <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                                  {relatedMsg.remarks}
+                                </Typography>
+                              </Paper>
+                            </Grid>
+                          )}
+                        </Grid>
+                      </ListItem>
+                    </React.Fragment>
+                  ))}
+                </List>
+              )}
+            </Box>
+          ) : null}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

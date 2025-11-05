@@ -23,7 +23,8 @@ import {
   LocationOn as LocationIcon,
   ElectricBolt,
   TrendingUp,
-  Refresh
+  Refresh,
+  InfoOutlined
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import { Bar, Line } from 'react-chartjs-2';
@@ -82,6 +83,7 @@ const StatCard = ({ title, value, icon, color }) => (
 
 function DashboardView() {
   const [messages, setMessages] = useState([]);
+  const [totalMessages, setTotalMessages] = useState(0); // Track total count from API
   const [stats, setStats] = useState(null);
   const [filters, setFilters] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -112,6 +114,7 @@ function DashboardView() {
       ]);
 
       setMessages(messagesRes.data.data || []);
+      setTotalMessages(messagesRes.data.total || 0); // Capture total count
       setStats(statsRes.data);
       setFilters(filtersRes.data);
       setYearlyData(yearlyRes.data);
@@ -405,9 +408,19 @@ function DashboardView() {
 
       {/* Data Table */}
       <Card sx={{ p: 2 }}>
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-          Market Messages ({messages.length})
-        </Typography>
+        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Market Messages (showing {messages.length.toLocaleString()} of {totalMessages.toLocaleString()})
+          </Typography>
+          {messages.length < totalMessages && (
+            <Chip 
+              label={`First ${messages.length.toLocaleString()} results shown`}
+              color="info"
+              size="small"
+              icon={<InfoOutlined />}
+            />
+          )}
+        </Box>
         <Box sx={{ height: 600, width: '100%' }}>
           <DataGrid
             rows={messages.map((row, idx) => ({ id: idx, ...row }))}
